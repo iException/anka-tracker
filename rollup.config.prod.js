@@ -1,12 +1,15 @@
-import typescript from 'rollup-plugin-typescript'
+import ts from 'rollup-plugin-typescript'
 import { uglify } from 'rollup-plugin-uglify'
 import banner from 'rollup-plugin-license'
 import tslint from 'rollup-plugin-tslint'
+import typescript from 'typescript'
 
 export default {
     input: 'src/index.ts',
     plugins: [
-        typescript(),
+        ts({
+            typescript
+        }),
         tslint(),
         uglify(),
         banner({

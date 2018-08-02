@@ -1,14 +1,18 @@
-import typescript from 'rollup-plugin-typescript'
+import ts from 'rollup-plugin-typescript'
 import tslint from 'rollup-plugin-tslint'
+import typescript from 'typescript'
 
 export default {
     input: 'src/index.ts',
     plugins: [
-        typescript(),
+        ts({
+            typescript
+        }),
         tslint()
     ],
     output: {
-        file: 'dist/index.js',
+        name: 'Tracker',
+        file: 'test/tracker.js',
         format: 'umd'
     }
 }

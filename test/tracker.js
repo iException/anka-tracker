@@ -16,13 +16,19 @@
         return target;
     };
 
+    var TASK_STATUS;
+    (function (TASK_STATUS) {
+        TASK_STATUS[TASK_STATUS["PENDING"] = 0] = "PENDING";
+        TASK_STATUS[TASK_STATUS["SUCCESS"] = 1] = "SUCCESS";
+        TASK_STATUS[TASK_STATUS["FAILED"] = 2] = "FAILED";
+    })(TASK_STATUS || (TASK_STATUS = {}));
     var Task = (function () {
         function Task(trackData) {
-            this.status = TaskStatus.pending;
+            this.status = TASK_STATUS.PENDING;
             this.data = trackData;
         }
         Task.prototype.isSucceed = function () {
-            this.status = TaskStatus.success;
+            this.status = TASK_STATUS.SUCCESS;
         };
         Task.prototype.isFailed = function () {
             this.status++;
@@ -37,7 +43,8 @@
     };
     var Inilialzer = (function () {
         function Inilialzer(config) {
-            config = Object.assign(config, DEFAULT_CONFIG);
+            if (config === void 0) { config = {}; }
+            config = Object.assign(DEFAULT_CONFIG, config);
             this.retry = config.retry;
             this.interval = config.interval;
             this.groupMaxLength = config.groupMaxLength;
@@ -46,12 +53,6 @@
         return Inilialzer;
     }());
 
-    var TASK_STATUS;
-    (function (TASK_STATUS) {
-        TASK_STATUS[TASK_STATUS["PENDING"] = 0] = "PENDING";
-        TASK_STATUS[TASK_STATUS["SUCCESS"] = 1] = "SUCCESS";
-        TASK_STATUS[TASK_STATUS["FAILED"] = 2] = "FAILED";
-    })(TASK_STATUS || (TASK_STATUS = {}));
     var QUEUE_MANAGER_STATUS;
     (function (QUEUE_MANAGER_STATUS) {
         QUEUE_MANAGER_STATUS[QUEUE_MANAGER_STATUS["IDLE"] = 0] = "IDLE";
@@ -64,33 +65,60 @@
             this.failedQueue = [];
             this.config = config;
             this.status = QUEUE_MANAGER_STATUS.INITIALIZING;
+            this.lastStoreUpdate = 0;
         }
         QueueManager.prototype.init = function (config) {
+            var _this = this;
             if (this.sender === void (0)) {
                 this.sender = config.sender;
                 this.status = QUEUE_MANAGER_STATUS.IDLE;
-                this.runner();
+            }
+            if (this.store === void (0)) {
+                this.store = config.store;
+            }
+            if (this.store) {
+                this.store.get().then(function (tasks) {
+                    var _a;
+                    (_a = _this.queue).push.apply(_a, tasks.map(function (task) { return new Task(task.data); }));
+                    _this.run();
+                });
+            }
+            else {
+                this.run();
             }
         };
         QueueManager.prototype.push = function (task) {
             if (task.status === TASK_STATUS.PENDING) {
                 this.queue.push(task);
             }
-            else if (task.status === TASK_STATUS.FAILED) {
+            else if (task.status >= TASK_STATUS.FAILED && task.status <= this.config.retry) {
                 this.failedQueue.push(task);
             }
+            this.updateStore();
             if (this.status === QUEUE_MANAGER_STATUS.IDLE) {
-                this.runner();
+                this.run();
             }
         };
-        QueueManager.prototype.runner = function () {
-            var _this = this;
+        QueueManager.prototype.pop = function () {
             var failedQueueLength = this.failedQueue.length;
             var groupMaxLength = this.config.groupMaxLength;
             var tasks = failedQueueLength - groupMaxLength >= 0 ?
                 this.failedQueue.splice(0, groupMaxLength) :
                 this.failedQueue.splice(0, failedQueueLength - 1).concat(this.queue.splice(0, groupMaxLength - failedQueueLength));
-            if (tasks.length === 0)
+            this.updateStore();
+            return tasks;
+        };
+        QueueManager.prototype.updateStore = function () {
+            var now = Date.now();
+            if (this.store && now - this.lastStoreUpdate >= 500) {
+                this.store.update(this.queue.concat(this.failedQueue));
+                this.lastStoreUpdate = now;
+            }
+        };
+        QueueManager.prototype.run = function () {
+            var _this = this;
+            var tasks = this.pop();
+            if (!this.sender || tasks.length === 0)
                 return;
             this.status = QUEUE_MANAGER_STATUS.RUNNING;
             return Promise.all(tasks.map(function (task) { return _this.sender.send(task); })).then(function (results) {
@@ -100,8 +128,10 @@
                     }
                 });
             }).then(function () {
-                _this.status = QUEUE_MANAGER_STATUS.IDLE;
-                _this.runner();
+                setTimeout(function () {
+                    _this.status = QUEUE_MANAGER_STATUS.IDLE;
+                    _this.run();
+                }, _this.config.interval);
             });
         };
         return QueueManager;
@@ -113,8 +143,8 @@
             this.config = new Inilialzer(config);
             this.queueManager = new QueueManager(this.config);
         }
-        Core.prototype.initSender = function (sender) {
-            this.queueManager.init(__assign({ sender: sender }, this.config));
+        Core.prototype.init = function (config) {
+            this.queueManager.init(__assign({}, this.config, config));
         };
         Core.prototype.log = function (trackData) {
             this.queueManager.push(new Task(trackData));
@@ -137,6 +167,24 @@
                 } }));
         });
     };
+    var setStorage = function (pramas) {
+        return new Promise(function (resolve, reject) {
+            wx.setStorage(__assign({}, pramas, { success: function (res) {
+                    resolve(res);
+                }, fail: function (err) {
+                    reject(err);
+                } }));
+        });
+    };
+    var getStorage = function (pramas) {
+        return new Promise(function (resolve, reject) {
+            wx.getStorage(__assign({}, pramas, { success: function (res) {
+                    resolve(res.data);
+                }, fail: function (err) {
+                    reject(err);
+                } }));
+        });
+    };
 
     var WeChatSender = (function () {
         function WeChatSender(url, globalData) {
@@ -147,8 +195,7 @@
             return request({
                 url: this.url,
                 method: 'POST',
-                header: this.globalData,
-                data: task.data
+                data: __assign({}, this.globalData, task.data)
             }).then(function () {
                 task.isSucceed();
                 return Promise.resolve(task);
@@ -160,13 +207,40 @@
         return WeChatSender;
     }());
 
+    var STORAGE_KEY = 'tracker_tasks';
+    var WeChatStore = (function () {
+        function WeChatStore() {
+            this.data = [];
+        }
+        WeChatStore.prototype.get = function () {
+            return getStorage({
+                key: STORAGE_KEY
+            });
+        };
+        WeChatStore.prototype.update = function (data) {
+            this.data = data;
+            return setStorage({
+                key: STORAGE_KEY,
+                data: data
+            });
+        };
+        return WeChatStore;
+    }());
+
     var Tracker = (function () {
         function Tracker(config) {
             this.core = new Core(config);
         }
         Tracker.prototype.init = function (url, globalData) {
             this.sender = new WeChatSender(url, globalData);
-            this.core.initSender(this.sender);
+            this.store = new WeChatStore();
+            this.core.init({
+                sender: this.sender,
+                store: this.store
+            });
+        };
+        Tracker.prototype.log = function (data) {
+            this.core.log(data);
         };
         return Tracker;
     }());

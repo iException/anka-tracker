@@ -1,0 +1,1 @@
+export { AliPaySender } from './Sender'
