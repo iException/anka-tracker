@@ -1,3 +1,3 @@
-export declare class Core {
+declare class Core {
     private static queue
 }

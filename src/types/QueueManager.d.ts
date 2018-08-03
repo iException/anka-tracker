@@ -1,4 +1,4 @@
-export declare class QueueManager {
+declare class QueueManager {
     private static queue
     private static failedQueue
     private static push(task: TaskConfig): void

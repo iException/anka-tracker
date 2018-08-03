@@ -1,22 +1,22 @@
-declare type TrackData = any
+declare type TrackData = {
+    [index: string]: any
+}
 
-declare interface TaskConfig {
+declare type TaskConfig = {
     type: string
     data: any
 }
 
-declare interface InilialzeConfig {
+declare type Sender = {
+    url: string
+    globalData: Object
+    send (task: Task): Promise<Task>
+}
+
+declare type InilialzeConfig = {
     retry?: number,
     interval?: number,
     groupMaxLength?: number,
-    sender?: Sender
+    sender?: Sender,
+    timestampKey?: string
 }
-
-declare namespace wx {
-    export function request(options: any): void
-    export function setStorage(options: any): void
-    export function getStorage(options: any): void
-}
-
-declare let Page: (page: any) => void
-declare let getApp: () => any

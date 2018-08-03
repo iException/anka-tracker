@@ -5,9 +5,11 @@ const STORAGE_KEY = 'tracker_tasks'
 
 export class WeChatStore implements Store {
     data: any[]
+    config: InilialzeConfig
 
-    constructor () {
+    constructor (config: InilialzeConfig) {
         this.data = []
+        this.config = config
     }
 
     get (): Promise<any> {

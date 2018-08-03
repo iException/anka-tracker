@@ -1,10 +1,12 @@
-export declare class Task {
-    protected type: string
-    protected data: any
+declare class Task {
+    public data: Object
     public status: number
+    public timestamp: number
     constructor (data: TrackData)
+    isSucceed (): void
+    isFailed (): void
 }
 
-export declare class FailedTask extends Task {
+declare class FailedTask extends Task {
     protected errMsg: [string, Error]
 }

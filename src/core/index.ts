@@ -8,19 +8,20 @@ export default class Core {
     readonly config: Inilialzer
     readonly queueManager: QueueManager
 
-    constructor (config: InilialzeConfig = {}) {
-        this.config = new Inilialzer(config)
+    constructor (config: Inilialzer) {
+        this.config = config
         this.queueManager = new QueueManager(this.config)
     }
 
     init (config: { sender: Sender, store?: Store }) {
+        // config.sender.
         this.queueManager.init({
             ...this.config,
             ...config
         })
     }
 
-    log (trackData: TrackData): void {
-        this.queueManager.push(new Task(trackData))
+    log (trackData: Task): void {
+        this.queueManager.push(trackData)
     }
 }

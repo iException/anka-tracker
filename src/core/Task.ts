@@ -4,12 +4,15 @@ export enum TASK_STATUS {
     FAILED
 }
 export class Task {
-    public data: Object
+    public data: {}
     public status: number
+    public timestamp?: number
 
     constructor (trackData: TrackData) {
+        const now = Date.now()
         this.status = TASK_STATUS.PENDING
         this.data = trackData
+        this.timestamp = now
     }
 
     isSucceed () {

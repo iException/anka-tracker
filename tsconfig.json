@@ -11,7 +11,8 @@
         ]
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "./package.json"
     ],
     "exclude": [
         "node_modules",
