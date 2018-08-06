@@ -4,6 +4,8 @@ import { CommonDataVendor } from '../core/CommonDataVendor'
 import { version } from '../../package.json'        // [!] (tslint plugin) FatalError: Ensure that the files supplied to lint have a .ts, .tsx, .d.ts, .js or .jsx extension.
 
 export const WeChatCommonDataVender: CommonDataVendor = {
+    TRACK_ID_KEY: 'bx_track_id',
+
     /**
      * 0 可选，1 必选
      */
@@ -51,9 +53,10 @@ export const WeChatCommonDataVender: CommonDataVendor = {
     }): Promise<any> {
         const { onLaunchOption } = config
         return Promise.all([
+            this.getTrackId(),
             wechat.getSystemInfo(),
             wechat.getNetworkType()
-        ]).then(([systemInfo, networkType]) => {
+        ]).then(([trackId, systemInfo, networkType]) => {
             const system = systemInfo.system.split(/\s+/)
             const query = qs.stringify(onLaunchOption.query)
             const commonData = {
@@ -81,12 +84,46 @@ export const WeChatCommonDataVender: CommonDataVendor = {
                 source_path: onLaunchOption.path,
                 source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId : '',
                 source_params: query,
-                source_src_key: onLaunchOption.query ? onLaunchOption.query.src : ''
+                source_src_key: onLaunchOption.query ? onLaunchOption.query.src : '',
                 // 业务相关
 
+                track_id: trackId
             }
             return Promise.resolve(commonData)
         })
+    },
+
+    getTrackId (): Promise<string> {
+        return wechat.getStorage(this.TRACK_ID_KEY)
+            .then((trackId: string) => {
+                return Promise.resolve(trackId)
+            })
+            .catch(err => {
+                return this.setTrackId()
+            })
+    },
+
+    setTrackId (): Promise<string> {
+        const UUID = this.genUUId()
+        return wechat.setStorage({
+            key: this.TRACK_ID_KEY,
+            data: UUID
+        }).then(() => {
+            return Promise.resolve(UUID)
+        }, () => {
+            wechat.setStorage({
+                key: this.TRACK_ID_KEY,
+                data: UUID
+            })
+            return Promise.resolve(UUID)
+        })
+    },
+
+    genUUId () {
+        return '' + Date.now() + '-' +
+            Math.floor(1e7 * Math.random()) + '-' +
+            Math.random().toString(16).replace('.', '') + '-' +
+            String(Math.random() * 31242).replace('.', '').slice(0, 8)
     },
 
     validate (data: any): Object {

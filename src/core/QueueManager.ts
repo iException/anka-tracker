@@ -27,7 +27,7 @@ export class QueueManager {
         this.lastStoreUpdate = 0
     }
 
-    init (config: { sender: Sender, store?: Store } & InilialzeConfig ): void {
+    init (config: { sender: Sender, store?: Store }): void {
         if (this.sender === void(0)) {
             this.sender = config.sender
             this.status = QUEUE_MANAGER_STATUS.IDLE

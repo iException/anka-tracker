@@ -12,10 +12,6 @@ declare interface SetStorageParams {
     data: Object | string
 }
 
-declare interface GetStorageParams {
-    key: string
-}
-
 /**
  * WeChat HTTP 请求
  * @param requestPramas
@@ -60,10 +56,10 @@ export function setStorage (pramas: SetStorageParams): Promise<any> {
  * 从本地缓存中异步获取指定 key 对应的内容
  * @param pramas
  */
-export function getStorage (pramas: GetStorageParams): Promise<any> {
+export function getStorage (key: string): Promise<any> {
     return new Promise((resolve, reject) => {
         wx.getStorage({
-            ...pramas,
+            key: key,
             success: (res: any): void => {
                 resolve(res.data)
             },

@@ -39,8 +39,8 @@ export class Tracker {
         this.core.log(new Task(data))
     }
 
-    commonData (): Promise<any> {
-        return this.commonDataVendor.getCommonData()
+    commonData (data: {onLaunchOption: onLaunchOption}): Promise<any> {
+        return this.commonDataVendor.getCommonData(data)
     }
 }
 
