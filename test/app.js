@@ -50,7 +50,7 @@ App({
             setTimeout(() => {
 
                 // 此时才会真正地完成初始化
-                tracker.init('http://bi.baixing.com:9001/dw-web/log', Object.assign(res, {
+                tracker.init('http://bi2.baixing.com:9001/dw-web/log', Object.assign(res, {
                     __debug: 1,
                     event_type: 'bx_wxmini',
                     app_type: 'wx',

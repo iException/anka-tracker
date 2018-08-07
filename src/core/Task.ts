@@ -1,15 +1,17 @@
 export enum TASK_STATUS {
+    SUCCESS = -2,
     PENDING,
-    SUCCESS,
     FAILED
 }
 export class Task {
+    private _id: string
     public data: {}
     public status: number
     public timestamp?: number
 
     constructor (trackData: TrackData) {
         const now = Date.now()
+        this._id = Math.random().toString(16).replace('.', '')
         this.status = TASK_STATUS.PENDING
         this.data = trackData
         this.timestamp = now

@@ -49,7 +49,6 @@ export class Tracker {
 
     handleNetworkStatusChange (networdkType: string | Error): void {
         const suspended = networdkType === 'none' || networdkType instanceof Error
-        console.log(suspended, networdkType)
         this.core.queueManager.suspend(suspended)
     }
 

@@ -1,6 +1,7 @@
 import { Task } from './Task'
 import { Store } from './Store'
 import { Sender } from './Sender'
+import * as helper from '../helper'
 import { Initializer } from './Initializer'
 import { TASK_STATUS } from './Task'
 
@@ -59,11 +60,13 @@ export class QueueManager {
     push (task: Task): void {
         if (task.status === TASK_STATUS.PENDING) {
             this.queue.push(task)
+            this.updateStore()
+            this.run()
         } else if (task.status >= TASK_STATUS.FAILED && task.status <= this.config.retry) {
             this.failedQueue.push(task)
+            this.updateStore()
+            this.run()
         }
-        this.updateStore()
-        this.run()
     }
 
     /**
@@ -83,9 +86,9 @@ export class QueueManager {
     /**
      * 更新任务缓存
      */
-    updateStore (): void {
+    updateStore (force?: boolean): void {
         const now = Date.now()
-        if (this.store && now - this.lastStoreUpdate >= 500) {
+        if (this.store && now - this.lastStoreUpdate >= 500 || force && this.store) {
             this.store.update([...this.queue, ...this.failedQueue])
             this.lastStoreUpdate = now
         }
@@ -99,6 +102,7 @@ export class QueueManager {
     }
 
     suspend (suspended: boolean): void {
+        this.updateStore(true)
         this.executor.suspend(suspended)
     }
 }
@@ -143,7 +147,7 @@ class Executor {
         Promise.all(tasks.map(task => this.sender.send(task)))
             .then((results: Task[]) => {
                 results.forEach((task: Task)  => {
-                    if (task.status === TASK_STATUS.FAILED) {
+                    if (task.status !== TASK_STATUS.SUCCESS) {
                         this.queueManager.push(task)
                     }
                 })

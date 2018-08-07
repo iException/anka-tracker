@@ -7,7 +7,9 @@ declare type InilialzeConfig = {
     interval?: number,
     groupMaxLength?: number,
     sender?: Sender,
-    timestampKey?: string
+    timestampKey?: string,
+    queueMaxLength?: number,
+    failedQueueMaxLength?: number
 }
 
 declare type Timer = any

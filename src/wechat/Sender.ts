@@ -1,6 +1,7 @@
+import * as wechat from './utils'
+import * as helper from '../helper'
 import { Task } from '../core/Task'
 import { Sender } from '../core/Sender'
-import * as wechat  from './utils'
 import { WeChatCommonDataVender } from './CommonDataVendor'
 import { Initializer } from '../core/Initializer'
 declare interface WeChatAPI {
@@ -33,7 +34,7 @@ export class WeChatSender implements Sender {
             ...this.globalData,
             ...task.data
         }
-        console.log('打点数据校验结果:', WeChatCommonDataVender.validate(data))
+        helper.log('打点数据校验结果:', task, WeChatCommonDataVender.validate(data))
 
         return wechat.request({
             url: this.url,
