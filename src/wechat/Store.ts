@@ -1,14 +1,14 @@
 import * as wechat  from './utils'
 import { Store } from '../core/Store'
-import { Inilialzer } from '../core/Initializer'
+import { Initializer } from '../core/Initializer'
 
 const STORAGE_KEY = 'tracker_tasks'
 
 export class WeChatStore implements Store {
     data: any[]
-    config: Inilialzer
+    config: Initializer
 
-    constructor (config: Inilialzer) {
+    constructor (config: Initializer) {
         this.data = []
         this.config = config
     }

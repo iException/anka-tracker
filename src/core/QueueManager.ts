@@ -1,36 +1,43 @@
 import { Task } from './Task'
 import { Store } from './Store'
 import { Sender } from './Sender'
-import { Inilialzer } from './Initializer'
+import { Initializer } from './Initializer'
 import { TASK_STATUS } from './Task'
 
-export enum QUEUE_MANAGER_STATUS {
+export enum QUEUE_EXECUTOR_STATUS {
     IDLE,
+    PAUSE,
     RUNNING,
-    INITIALIZING
 }
 
+/**
+ * Class 任务队列管理器
+ * 管理器不考虑任务执行细节，以及何时暂停
+ */
 export class QueueManager {
-    public config: Inilialzer
+    public config: Initializer
     private sender: Sender
     private queue: Array<Task>
     private failedQueue: Array<Task>
-    private status: number
     private store: Store
-    private lastStoreUpdate: number
+    private lastStoreUpdate: number   // 上次缓存更新时间
+    private executor: Executor
 
-    constructor (config: Inilialzer) {
+    constructor (config: Initializer) {
         this.queue = []
         this.failedQueue = []
         this.config = config
-        this.status = QUEUE_MANAGER_STATUS.INITIALIZING
         this.lastStoreUpdate = 0
+        this.executor = new Executor()
     }
 
+    /**
+     * 初始化任务队列管理器
+     */
     init (config: { sender: Sender, store?: Store }): void {
         if (this.sender === void(0)) {
             this.sender = config.sender
-            this.status = QUEUE_MANAGER_STATUS.IDLE
+            this.executor.init(this.sender, this)
         }
         if (this.store === void(0)) {
             this.store = config.store
@@ -56,11 +63,12 @@ export class QueueManager {
             this.failedQueue.push(task)
         }
         this.updateStore()
-        if (this.status === QUEUE_MANAGER_STATUS.IDLE) {
-            this.run()
-        }
+        this.run()
     }
 
+    /**
+     * 取出任务执行
+     */
     pop (): Task[] {
         const failedQueueLength = this.failedQueue.length
         const groupMaxLength = this.config.groupMaxLength
@@ -72,7 +80,10 @@ export class QueueManager {
         return tasks
     }
 
-    updateStore () {
+    /**
+     * 更新任务缓存
+     */
+    updateStore (): void {
         const now = Date.now()
         if (this.store && now - this.lastStoreUpdate >= 500) {
             this.store.update([...this.queue, ...this.failedQueue])
@@ -81,26 +92,81 @@ export class QueueManager {
     }
 
     /**
-     * 打点任务的执行者
-     * 在 sender 被设置之前不会执行
+     * 任务的执行者
      */
-    run (): Promise<any> {
-        const tasks = this.pop()
-        if (!this.sender || tasks.length === 0) return
+    run (): void {
+        this.executor.run()
+    }
 
-        this.status = QUEUE_MANAGER_STATUS.RUNNING
-        // TODO：这里是否可以将多次打点数据合并发送
-        return Promise.all(tasks.map(task => this.sender.send(task))).then((results: Task[]) => {
-            results.forEach((task: Task)  => {
-                if (task.status === TASK_STATUS.FAILED) {
-                    this.push(task)
-                }
+    suspend (suspended: boolean): void {
+        this.executor.suspend(suspended)
+    }
+}
+
+
+class Executor {
+    status: QUEUE_EXECUTOR_STATUS
+    sender: Sender
+    timeoutId: Timer
+    queueManager: QueueManager
+    timer: Timer
+
+    constructor () {
+        this.status = QUEUE_EXECUTOR_STATUS.IDLE
+    }
+
+    get isIdle () {
+        return this.sender &&
+            this.queueManager &&
+            this.status === QUEUE_EXECUTOR_STATUS.IDLE
+    }
+
+    init (sender: Sender, queueManager: QueueManager) {
+        this.sender = sender
+        this.queueManager = queueManager
+    }
+
+    run () {
+        if (this.isIdle) {
+            this.exec()
+        }
+    }
+
+    exec () {
+        const tasks = this.queueManager.pop()
+        if (tasks.length) {
+            this.status = QUEUE_EXECUTOR_STATUS.RUNNING
+        } else {
+            this.status = QUEUE_EXECUTOR_STATUS.IDLE
+            return
+        }
+        Promise.all(tasks.map(task => this.sender.send(task)))
+            .then((results: Task[]) => {
+                results.forEach((task: Task)  => {
+                    if (task.status === TASK_STATUS.FAILED) {
+                        this.queueManager.push(task)
+                    }
+                })
             })
-        }).then((): void => {
-            setTimeout(() => {
-                this.status = QUEUE_MANAGER_STATUS.IDLE
-                this.run()
-            }, this.config.interval)
-        })
+            .then((): void => {
+                this.timer = setTimeout(() => {
+                    this.exec()
+                }, this.queueManager.config.interval)
+            })
+    }
+
+    suspend (pause: boolean) {
+        if (pause) {
+            this.status = QUEUE_EXECUTOR_STATUS.PAUSE
+            // pause
+            clearTimeout(this.timer)
+        // 只有暂停状态时才能撤销暂停
+        } else if (this.status === QUEUE_EXECUTOR_STATUS.PAUSE) {
+            this.status = QUEUE_EXECUTOR_STATUS.IDLE
+            // clearTimeout(this.timer)
+            this.run()
+        } else if (this.status === QUEUE_EXECUTOR_STATUS.IDLE) {
+            this.run()
+        }
     }
 }

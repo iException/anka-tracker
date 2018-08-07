@@ -7,7 +7,7 @@ const DEFAULT_CONFIG: InilialzeConfig = {
     timestampKey: 'timestamp_ms'
 }
 
-export class Inilialzer {
+export class Initializer {
     readonly retry: number
     readonly interval: number
     readonly groupMaxLength: number

@@ -1,14 +1,14 @@
 import { Task } from './Task'
 import { Store } from './Store'
 import { Sender } from './Sender'
-import { Inilialzer } from './Initializer'
+import { Initializer } from './Initializer'
 import { QueueManager } from './QueueManager'
 
 export default class Core {
-    readonly config: Inilialzer
+    readonly config: Initializer
     readonly queueManager: QueueManager
 
-    constructor (config: Inilialzer) {
+    constructor (config: Initializer) {
         this.config = config
         this.queueManager = new QueueManager(this.config)
     }

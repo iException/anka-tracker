@@ -2,7 +2,7 @@ import { Task } from '../core/Task'
 import { Sender } from '../core/Sender'
 import * as wechat  from './utils'
 import { WeChatCommonDataVender } from './CommonDataVendor'
-import { Inilialzer } from '../core/Initializer'
+import { Initializer } from '../core/Initializer'
 declare interface WeChatAPI {
     request (): Promise<any>
 }
@@ -10,9 +10,9 @@ declare interface WeChatAPI {
 export class WeChatSender implements Sender {
     url: string
     globalData: Object
-    config: Inilialzer
+    config: Initializer
 
-    constructor (url: string, config: Inilialzer, globalData?: Object) {
+    constructor (url: string, config: Initializer, globalData?: Object) {
         this.url = url
         this.config = config
         this.globalData = globalData

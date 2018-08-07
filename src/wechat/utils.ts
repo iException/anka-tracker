@@ -89,7 +89,7 @@ export function getSystemInfo (): Promise<any> {
 /**
  * 获取网络类型。
  */
-export function getNetworkType (): Promise<any> {
+export function getNetworkType (): Promise<string> {
     return new Promise((resolve, reject) => {
         wx.getNetworkType({
             success: (res: any): void => {
@@ -107,5 +107,7 @@ export function getNetworkType (): Promise<any> {
  * @param callback
  */
 export function onNetworkStatusChange (callback: Function): void {
-    wx.onNetworkStatusChange(callback)
+    wx.onNetworkStatusChange((res: {isConnected: boolean, networkType: string}) => {
+        callback(res.networkType)
+    })
 }

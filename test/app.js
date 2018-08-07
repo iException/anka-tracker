@@ -5,7 +5,7 @@ const { Tracker } = require('./tracker.js')
  */
 const tracker = new Tracker({
     retry: 2,                       // 失败重试次数
-    interval: 500,                  // 每组请求发送时间间隔 ms
+    interval: 2000,                  // 每组请求发送时间间隔 ms
     groupMaxLength: 2,              // 每组包含打点数
     timestampKey: 'timestampKey'    // 时间戳 key
 })
@@ -21,7 +21,7 @@ App({
 
         console.log(tracker)
 
-        new Array(10).fill(1).forEach((item, index) => {
+        new Array(30).fill(1).forEach((item, index) => {
 
             // 自己随便来点数据
             tracker.log({
