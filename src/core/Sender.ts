@@ -2,7 +2,7 @@ import { Task } from './Task'
 
 export interface Sender {
     url: string
-    globalData: Object
+    commonData: Object
 
     send (task: Task): Promise<Task>
 }

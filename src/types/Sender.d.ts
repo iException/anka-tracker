@@ -1,5 +1,5 @@
 declare interface Sender {
     url: string
-    globalData: Object
+    commonData: Object
     send (task: Task): Promise<Task>
 }

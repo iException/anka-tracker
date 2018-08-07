@@ -15,5 +15,15 @@ Page({
             action: '__viewPage',
             page_id: 'indexPage'
         })
+    },
+    track () {
+        getApp().tracker.log({
+            test_key: 'clickEvent',
+            tracktype: 'event',     // event 或pageview
+            action: '__viewPage',
+            page_type: 'common',
+            page_id: 'index',
+            page_level: 'second_page'
+        })
     }
 })

@@ -139,15 +139,15 @@
     };
 
     var WeChatSender = (function () {
-        function WeChatSender(url, globalData) {
+        function WeChatSender(url, commonData) {
             this.url = url;
-            this.globalData = globalData;
+            this.commonData = commonData;
         }
         WeChatSender.prototype.send = function (task) {
             return request({
                 url: this.url,
                 method: 'POST',
-                header: this.globalData,
+                header: this.commonData,
                 data: task.data
             }).then(function () {
                 task.isSucceed();
@@ -164,8 +164,8 @@
         function Tracker(config) {
             this.core = new Core(config);
         }
-        Tracker.prototype.init = function (url, globalData) {
-            this.sender = new WeChatSender(url, globalData);
+        Tracker.prototype.init = function (url, commonData) {
+            this.sender = new WeChatSender(url, commonData);
             this.core.initSender(this.sender);
         };
         return Tracker;

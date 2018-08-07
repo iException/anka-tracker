@@ -9,7 +9,7 @@ export class Tracker {
     private sender: Sender
     private commonDataVendor: CommonDataVendor
     constructor (config: InilialzeConfig)
-    init (url: string, globalData?: Object): void
+    init (url: string, commonData?: Object): void
     log (data: TrackData): void
     commonData (data: {onLaunchOption: onLaunchOption}): Promise<any>
 }

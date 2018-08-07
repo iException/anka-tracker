@@ -3,6 +3,8 @@ declare type TrackData = {
 }
 
 declare type InilialzeConfig = {
+    debug?: boolean,
+    trackerHost?: string,
     retry?: number,
     interval?: number,
     groupMaxLength?: number,

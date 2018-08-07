@@ -1,5 +1,7 @@
-const DEBUG = true
+export default {
+    DEBUG: true,
 
-export function log (...e: any[]): void {
-    DEBUG && console.log('[tracker]', ...e)
+    log (...e: any[]): void {
+        this.DEBUG && console.log('[tracker]', ...e)
+    }
 }

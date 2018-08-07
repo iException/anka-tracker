@@ -8,18 +8,18 @@ declare interface AliPayAPI {
 
 export class AliPaySender implements Sender {
     url: string
-    globalData: Object
+    commonData: Object
 
-    constructor (url: string, globalData?: Object) {
+    constructor (url: string, commonData?: Object) {
         this.url = url
-        this.globalData = globalData
+        this.commonData = commonData
     }
 
     send (task: Task): Promise<Task> {
         return wechat.request({
             url: this.url,
             method: 'POST',
-            header: this.globalData,
+            header: this.commonData,
             data: task.data
         }).then(() => {
             // 这一步肥肠重要，只需改变状态即可

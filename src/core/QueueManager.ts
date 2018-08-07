@@ -58,7 +58,7 @@ export class QueueManager {
      * @param task
      */
     push (task: Task): void {
-        if (task.status === TASK_STATUS.PENDING) {
+        if (task.status === TASK_STATUS.PENDING && this.queue.length < this.config.queueMaxLength) {
             this.queue.push(task)
             this.updateStore()
             this.run()
