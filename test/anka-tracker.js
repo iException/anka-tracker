@@ -989,7 +989,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.0.2";
+    var version = "0.0.3";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -1169,7 +1169,7 @@
             var suspended = networdkType === 'none' || networdkType instanceof Error;
             this.core.queueManager.suspend(suspended);
         };
-        Tracker.prototype.asycnInitWithCommonData = function (commonData) {
+        Tracker.prototype.asyncInitWithCommonData = function (commonData) {
             var _this = this;
             if (commonData === void 0) { commonData = {}; }
             return this.commonDataVendor.getCommonData({
@@ -1219,3 +1219,4 @@
     Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=anka-tracker.js.map

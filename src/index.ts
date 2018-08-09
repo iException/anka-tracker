@@ -68,7 +68,7 @@ export class Tracker {
         this.core.queueManager.suspend(suspended)
     }
 
-    asycnInitWithCommonData (commonData: object = {}): Promise<void> {
+    asyncInitWithCommonData (commonData: object = {}): Promise<void> {
         return this.commonDataVendor.getCommonData({
             onLaunchOption: this.onLaunchOption
         }).then(res => {

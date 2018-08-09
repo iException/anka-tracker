@@ -31,7 +31,7 @@ App({
             // 示意
             complete: () => {
                 // 只有初始化成功后才会开始打点请求
-                tracker.asycnInitWithCommonData({
+                tracker.asyncInitWithCommonData({
                     loginCode: '23333333'
                 }).then(() => {
                     console.log('初始化成功，开始执行打点任务')
