@@ -24,7 +24,7 @@ export abstract class CommonDataVendor {
         bx_user_id: 0,
         visitor_mobile: 0,
         distinct_id: 0,
-        ip: 1,
+        ip: 0,
         os: 1,
         os_version: 1,
         model: 1,

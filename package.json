@@ -2,7 +2,7 @@
   "name": "@anka-dev/tracker",
   "version": "0.0.2",
   "description": "",
-  "main": "dist/index.min.js",
+  "main": "dist/anka-tracker.min.js",
   "scripts": {
     "dev": "rollup -c build/rollup.config.dev.js -w",
     "build": "rollup -c build/rollup.config.prod.js",

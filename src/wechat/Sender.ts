@@ -17,14 +17,19 @@ export class WeChatSender implements Sender {
     }
 
     send (task: Task): Promise<Task> {
-        const data = {
+        const data = <TrackData>{
             ...this.commonData,
             ...task.data
+        }
+        let url = this.url
+        if (this.config.attachActionToUrl) {
+            const trackAction = data.action || ''
+            url = /\/$/.test(this.url) ? `${this.url}${trackAction}` : `${this.url}/${trackAction}`
         }
         helper.log('打点数据校验结果:', task, WeChatCommonDataVender.validate(data))
 
         return wechat.request({
-            url: this.url,
+            url,
             method: 'POST',
             data
         }).then(() => {

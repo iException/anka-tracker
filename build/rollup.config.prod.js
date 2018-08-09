@@ -10,6 +10,6 @@ export default Object.assign(rollupConfig, {
         })
     ]),
     output: Object.assign(rollupConfig.output, {
-        file: 'dist/index.min.js'
+        file: 'dist/anka-tracker.min.js'
     })
 })

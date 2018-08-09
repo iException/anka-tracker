@@ -1,5 +1,5 @@
 export enum TASK_STATUS {
-    SUCCESS = -2,
+    SUCCESS = -1,
     PENDING,
     FAILED
 }

@@ -62,7 +62,7 @@ export class QueueManager {
             this.queue.push(task)
             this.updateStore()
             this.run()
-        } else if (task.status >= TASK_STATUS.FAILED && task.status <= this.config.retry) {
+        } else if ((task.status >= TASK_STATUS.FAILED) && (task.status <= this.config.retry)) {
             this.failedQueue.push(task)
             this.updateStore()
             this.run()

@@ -22,7 +22,7 @@ Page({
             tracktype: 'event',     // event 或pageview
             action: '__viewPage',
             page_type: 'common',
-            page_id: 'index',
+            page_id: 'indexPage',
             page_level: 'second_page'
         })
     }

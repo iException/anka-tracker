@@ -7,7 +7,7 @@ export class WeChatCommonDataVender extends CommonDataVendor {
     getCommonData (config: {
         onLaunchOption: onLaunchOption
     }): Promise<any> {
-        const { onLaunchOption } = config
+        const { onLaunchOption = <onLaunchOption>{} } = config
         return Promise.all([
             this.getTrackId(),
             wechat.getSystemInfo(),
@@ -40,7 +40,7 @@ export class WeChatCommonDataVender extends CommonDataVendor {
                 source_path: onLaunchOption.path,
                 source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId : '',
                 source_params: query,
-                source_src_key: onLaunchOption.query ? onLaunchOption.query.src : '',
+                source_src_key: onLaunchOption.query ? onLaunchOption.query.src || '' : '',
                 // 业务相关
 
                 track_id: trackId

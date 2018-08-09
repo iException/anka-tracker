@@ -13,14 +13,16 @@ import {
 import { AliPaySender } from './alipay/index'
 import { NetworkDetector } from './core/NetworkDetector'
 import { CommonDataVendor } from './core/CommonDataVendor'
+import { resolve } from 'dns';
 
 export class Tracker {
     private core: Core
-    private config: Initializer
     private store: Store
     private sender: Sender
-    private networkDetector: NetworkDetector
-    private commonDataVendor: CommonDataVendor
+    public config: Initializer
+    public networkDetector: NetworkDetector
+    public commonDataVendor: CommonDataVendor
+    public onLaunchOption: onLaunchOption
 
     constructor (config: InilialzeConfig = {}) {
         this.config = new Initializer(config)
@@ -30,6 +32,18 @@ export class Tracker {
         this.core.queueManager.suspend(true)
         this.networkDetector = new WeChatNetworkDetector()
         this.commonDataVendor = new WeChatCommonDataVender()
+    }
+
+    static generateTrackerInstance (): Tracker {
+        let config = <InilialzeConfig>{}
+        try {
+            config = require('./anka-tracker.config.js')
+        } catch (err) {}
+        const tracker = new Tracker(config)
+        if (config.extractOnLaunchOption) {
+            tracker.extractOnLaunchOption()
+        }
+        return tracker
     }
 
     init (commonData?: Object) {
@@ -54,20 +68,47 @@ export class Tracker {
         this.core.queueManager.suspend(suspended)
     }
 
+    asycnInitWithCommonData (commonData: object = {}): Promise<void> {
+        return this.commonDataVendor.getCommonData({
+            onLaunchOption: this.onLaunchOption
+        }).then(res => {
+            helper.log('初始化完成')
+            this.init(Object.assign(res, this.config.commonData, commonData))
+        }).catch(err => {
+            helper.log('初始化失败')
+            console.log(err)
+        })
+    }
+
+    extractOnLaunchOption (): void {
+        const tracker = this
+        const _App = App
+
+        App = <AppConstructor>function (object) {
+            const AppLaunchHook = object.onLaunch
+            object['onLaunch'] = function (options) {
+                onAppLaunch.call(this, options)
+                AppLaunchHook && AppLaunchHook.call(this, options)
+            }
+            _App(object)
+        }
+
+        function onAppLaunch (options: onLaunchOption) {
+            tracker.onLaunchOption = options
+        }
+    }
+
     log (data: TrackData): void {
         const now = Date.now()
         data[this.config.timestampKey] = now
         this.core.log(new Task(data))
     }
 
-    commonData (data: {onLaunchOption: onLaunchOption}): Promise<any> {
-        return this.commonDataVendor.getCommonData(data)
+    action (action: string = '', data: TrackData): void {
+        if (typeof action !== 'string') throw new Error('缺少 action 参数')
+        data.action = action
+        this.log(data)
     }
 }
 
-let config = {}
-try {
-    config = require('./anka-tracker.config.js')
-} catch (err) {}
-
-export const tracker = new Tracker(config)
+export const tracker = Tracker.generateTrackerInstance()
