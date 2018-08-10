@@ -13,7 +13,7 @@ export default class Core {
         this.queueManager = new QueueManager(this.config)
     }
 
-    init (config: { sender: Sender, store?: Store }) {
+    init (config: { sender: Sender, store: Store }) {
         // config.sender.
         this.queueManager.init({
             ...config

@@ -35,22 +35,15 @@ export class QueueManager {
     /**
      * 初始化任务队列管理器
      */
-    init (config: { sender: Sender, store?: Store }): void {
-        if (this.sender === void(0)) {
-            this.sender = config.sender
-            this.executor.init(this.sender, this)
-        }
-        if (this.store === void(0)) {
-            this.store = config.store
-        }
-        if (this.store) {
-            this.store.get().then(tasks => {
-                this.queue.push(...tasks.map((task: Task) => new Task(task.data)))
-                this.run()
-            })
-        } else {
+    init (config: { sender: Sender, store: Store }): void {
+        if (this.sender) return
+        this.store = config.store
+        this.sender = config.sender
+        this.executor.init(this.sender, this)
+        this.store.get().then(tasks => {
+            this.queue.push(...tasks.map((task: Task) => new Task(task.data)))
             this.run()
-        }
+        })
     }
 
     /**
@@ -77,7 +70,7 @@ export class QueueManager {
         const groupMaxLength = this.config.groupMaxLength
         const tasks: Task[] = failedQueueLength - groupMaxLength >= 0 ?
             this.failedQueue.splice(0, groupMaxLength) :
-            this.failedQueue.splice(0, failedQueueLength - 1).concat(this.queue.splice(0, groupMaxLength - failedQueueLength))
+            this.failedQueue.splice(0, failedQueueLength).concat(this.queue.splice(0, groupMaxLength - failedQueueLength))
 
         this.updateStore()
         return tasks

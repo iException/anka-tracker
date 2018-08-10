@@ -2,10 +2,12 @@
     "compilerOptions": {
         "target": "es5",
         "module": "umd",
+        "alwaysStrict": true,
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "moduleResolution": "node",
+        "experimentalDecorators": true,
         "sourceMap": true,
         "lib": [
             "es2015",

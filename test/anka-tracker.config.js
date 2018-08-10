@@ -10,6 +10,7 @@ module.exports = {
     commonData: {
         __debug: 1,                 // 默认值是 1
         event_type: 'bx_wxmini',
+        tracktype: 'event',     // event 或pageview
         app_type: 'wx',
         app_id: 'wxfd853a0b03d0aea9',
         app_name: '宠咖秀',

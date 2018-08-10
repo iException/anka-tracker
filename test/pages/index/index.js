@@ -10,11 +10,11 @@ Page({
         canIUse: wx.canIUse('button.open-type.getUserInfo')
     },
     onShow () {
-        getApp().tracker.log({
-            tracktype: 'event',     // event 或pageview
-            action: '__viewPage',
-            page_id: 'indexPage'
-        })
+        // getApp().tracker.log({
+        //     tracktype: 'event',     // event 或pageview
+        //     action: '__viewPage',
+        //     page_id: 'indexPage'
+        // })
     },
     track () {
         getApp().tracker.log({
