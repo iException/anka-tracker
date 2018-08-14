@@ -13,25 +13,13 @@ App({
 
         console.log(tracker)
 
-
-        // 可以自定义一个 pv 方法
-        tracker.pv = (trackData = {}) => {
-            tracker.action(
-                '__pageView',
-                {
-                    tracktype: 'event2',     // event 或pageview
-                },
-                trackData,
-                this.genLastPageId(trackData.page_id)
-            )
-        }
-
         // 自己随便来点数据
         for (let i = 0; i < 6; i++) {
             tracker.pv({
                 page_type: 'common',
                 test_key: 'post_moment',
                 page_level: 'second_page',
+                // 这个是必填字段
                 page_id: `page_id_${this.globalData.count++}`
             })
         }

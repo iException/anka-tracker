@@ -123,12 +123,13 @@
             for (var _i = 0; _i < arguments.length; _i++) {
                 e[_i] = arguments[_i];
             }
-            this.DEBUG && console.log.apply(console, ['[ 🔍 tracker]'].concat(e));
+            this.DEBUG && console.log.apply(console, ['%c[🔍 tracker]', 'color:rgba(118,147,92,1);'].concat(e));
         }
     };
     function readonlyDecorator() {
         return function (target, propertyKey, propertyDescriptor) {
             propertyDescriptor.writable = false;
+            return propertyDescriptor;
         };
     }
 
@@ -802,7 +803,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.0.3";
+    var version = "0.0.4";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -1240,7 +1241,6 @@
                     }));
                 }
                 else {
-                    console.log(data);
                     tasks.push(Promise.resolve(data));
                 }
             });
@@ -1260,6 +1260,16 @@
                     action: action
                 }]));
         };
+        BxTracker.prototype.pv = function (trackData) {
+            this.action('__pageView', trackData, this.genLastPageId(trackData));
+        };
+        BxTracker.prototype.genLastPageId = function (trackData) {
+            var _a = this.last_page_id, last_page_id = _a === void 0 ? '' : _a;
+            this.last_page_id = trackData.page_id;
+            return {
+                last_page_id: last_page_id
+            };
+        };
         __decorate([
             readonlyDecorator()
         ], BxTracker.prototype, "asyncInitWithCommonData", null);
@@ -1272,6 +1282,12 @@
         __decorate([
             readonlyDecorator()
         ], BxTracker.prototype, "action", null);
+        __decorate([
+            readonlyDecorator()
+        ], BxTracker.prototype, "pv", null);
+        __decorate([
+            readonlyDecorator()
+        ], BxTracker.prototype, "genLastPageId", null);
         return BxTracker;
     }(Tracker));
     var tracker = BxTracker.generateTrackerInstance();

@@ -2,6 +2,8 @@ import { Tracker } from './Tracker'
 import helper, { readonlyDecorator } from './helper'
 
 export class BxTracker extends Tracker {
+    private last_page_id: string
+
     static generateTrackerInstance (): Tracker {
         let config = <InilialzeConfig>{}
         try {
@@ -54,7 +56,6 @@ export class BxTracker extends Tracker {
                     data(resolve)
                 }))
             } else {
-                console.log(data)
                 tasks.push(Promise.resolve(data))
             }
         })
@@ -69,6 +70,24 @@ export class BxTracker extends Tracker {
         this.track(...dataList, {
             action
         })
+    }
+
+    @readonlyDecorator()
+    pv (trackData: TrackData) {
+        this.action(
+            '__pageView',
+            trackData,
+            this.genLastPageId(trackData)
+        )
+    }
+
+    @readonlyDecorator()
+    genLastPageId (trackData: TrackData): TrackData {
+        const { last_page_id = '' } = this
+        this.last_page_id = trackData.page_id
+        return {
+            last_page_id
+        }
     }
 }
 
