@@ -803,7 +803,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.0.5";
+    var version = "0.0.6";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
