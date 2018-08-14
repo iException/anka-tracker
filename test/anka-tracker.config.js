@@ -1,7 +1,8 @@
 module.exports = {
     debug: true,
+    httpMethod: 'POST',
     trackerHost: 'http://bi.baixing.com:9001/dw-web/log',
-    retry: 1,                       // 失败重试次数
+    retry: 0,                       // 失败重试次数
     interval: 2012,                 // 每组请求发送时间间隔 ms
     groupMaxLength: 2,              // 每组包含打点数
     timestampKey: 'timestamp_ms',   // 时间戳 key
@@ -10,7 +11,7 @@ module.exports = {
     commonData: {
         __debug: 1,                 // 默认值是 1
         event_type: 'bx_wxmini',
-        tracktype: 'event',     // event 或pageview
+        tracktype: 'event',         // event 或pageview
         app_type: 'wx',
         app_id: 'wxfd853a0b03d0aea9',
         app_name: '宠咖秀',

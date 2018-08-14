@@ -9,6 +9,9 @@ declare interface InilialzeConfig {
     // 开启 log 调试
     debug?: boolean,
 
+    // sender 发送请求是使用的 HTTP 方法
+    httpMethod?: string,
+
     // 数据接收接口
     trackerHost?: string,
 

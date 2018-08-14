@@ -836,7 +836,7 @@
                     app_category: '',
                     source: onLaunchOption.scene,
                     source_path: onLaunchOption.path,
-                    source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId : '',
+                    source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId || '' : '',
                     source_params: query,
                     source_src_key: onLaunchOption.query ? onLaunchOption.query.src || '' : '',
                     track_id: trackId
@@ -898,8 +898,8 @@
             this.commonData = commonData;
         }
         WeChatSender.prototype.send = function (task) {
-            var data = __assign({}, this.commonData, task.data);
             var url = this.url;
+            var data = __assign({}, this.commonData, task.data);
             if (this.config.attachActionToUrl) {
                 var trackAction = data.action || '';
                 url = /\/$/.test(this.url) ? "" + this.url + trackAction : this.url + "/" + trackAction;
@@ -907,7 +907,7 @@
             helper.log('打点数据校验结果:', task, WeChatCommonDataVender.validate(data));
             return request({
                 url: url,
-                method: 'POST',
+                method: this.config.httpMethod,
                 data: data
             }).then(function () {
                 task.isSucceed();
@@ -1111,6 +1111,7 @@
 
     var DEFAULT_CONFIG = {
         debug: true,
+        httpMethod: 'POST',
         retry: 2,
         interval: 1000,
         groupMaxLength: 5,
@@ -1123,17 +1124,7 @@
     var Initializer = (function () {
         function Initializer(config) {
             if (config === void 0) { config = {}; }
-            config = Object.assign(DEFAULT_CONFIG, config);
-            this.debug = config.debug;
-            this.trackerHost = config.trackerHost;
-            this.retry = config.retry;
-            this.interval = config.interval;
-            this.commonData = config.commonData;
-            this.groupMaxLength = config.groupMaxLength;
-            this.timestampKey = config.timestampKey;
-            this.queueMaxLength = config.queueMaxLength;
-            this.attachActionToUrl = config.attachActionToUrl;
-            this.extractOnLaunchOption = config.extractOnLaunchOption;
+            Object.assign(this, DEFAULT_CONFIG, config);
         }
         return Initializer;
     }());

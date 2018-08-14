@@ -17,11 +17,11 @@ export class WeChatSender implements Sender {
     }
 
     send (task: Task): Promise<Task> {
+        let url = this.url
         const data = <TrackData>{
             ...this.commonData,
             ...task.data
         }
-        let url = this.url
         if (this.config.attachActionToUrl) {
             const trackAction = data.action || ''
             url = /\/$/.test(this.url) ? `${this.url}${trackAction}` : `${this.url}/${trackAction}`
@@ -30,7 +30,7 @@ export class WeChatSender implements Sender {
 
         return wechat.request({
             url,
-            method: 'POST',
+            method: this.config.httpMethod,
             data
         }).then(() => {
             // 这一步肥肠重要，只需改变状态即可

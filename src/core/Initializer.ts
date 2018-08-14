@@ -2,6 +2,7 @@ import { Sender } from './Sender'
 
 const DEFAULT_CONFIG: InilialzeConfig = {
     debug: true,
+    httpMethod: 'POST',
     retry: 2,
     interval: 1000,
     groupMaxLength: 5,
@@ -14,6 +15,7 @@ const DEFAULT_CONFIG: InilialzeConfig = {
 
 export class Initializer implements InilialzeConfig {
     readonly debug: boolean
+    readonly httpMethod: string
     readonly trackerHost: string
     readonly retry: number
     readonly interval: number
@@ -25,16 +27,6 @@ export class Initializer implements InilialzeConfig {
     readonly extractOnLaunchOption: boolean
 
     constructor (config: InilialzeConfig = {}) {
-        config = Object.assign(DEFAULT_CONFIG, config)
-        this.debug = config.debug
-        this.trackerHost = config.trackerHost
-        this.retry = config.retry
-        this.interval = config.interval
-        this.commonData = config.commonData
-        this.groupMaxLength = config.groupMaxLength
-        this.timestampKey = config.timestampKey
-        this.queueMaxLength = config.queueMaxLength
-        this.attachActionToUrl = config.attachActionToUrl
-        this.extractOnLaunchOption = config.extractOnLaunchOption
+        Object.assign(this, DEFAULT_CONFIG, config)
     }
 }
