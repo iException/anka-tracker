@@ -4,7 +4,6 @@ const { tracker } = require('./anka-tracker.js')
 App({
     globalData: {
         count: 1,
-        last_page_id: 'none'
     },
 
     onLaunch (options) {
@@ -15,14 +14,31 @@ App({
 
         // 自己随便来点数据
         for (let i = 0; i < 6; i++) {
-            tracker.pv({
-                page_type: 'common',
-                test_key: 'post_moment',
-                page_level: 'second_page',
-                // 这个是必填字段
-                page_id: `page_id_${this.globalData.count++}`
-            })
+            tracker.pv(
+                // action 必须指定
+                '__viewPage',
+
+                // 可以传入对象
+                {
+                    page_type: 'common',
+                    page_level: 'second_page',
+                    // 这个是必填字段
+                    page_id: `page_id_${this.globalData.count++}`
+                },
+
+                // 也可以传入方法，注意必须调用 callback
+                callback => {
+                    callback({
+                        test_key: 'post_moment'
+                    })
+                }
+            )
         }
+
+        tracker.evt('share', {
+            moment_id: 1,
+            user_id: 2333
+        })
 
         wx.login({
             // 示意

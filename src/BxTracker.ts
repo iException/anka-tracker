@@ -48,7 +48,7 @@ export class BxTracker extends Tracker {
     }
 
     @readonlyDecorator()
-    track (...dataList: Array<TrackData | TrackDataFactory>): void {
+    composeCommonData (dataList: Array<TrackData | TrackDataFactory>): Promise<TrackData> {
         const tasks: Promise<TrackData>[] = []
         dataList.map(data => {
             if (typeof data === 'function') {
@@ -59,26 +59,35 @@ export class BxTracker extends Tracker {
                 tasks.push(Promise.resolve(data))
             }
         })
-        Promise.all(tasks).then((commonDataList: TrackData[]) => {
-            this.log(Object.assign({}, ...commonDataList))
-        })
+        return Promise.all(tasks).then((commonDataList: TrackData[]) => Promise.resolve(Object.assign({}, ...commonDataList)))
     }
 
     @readonlyDecorator()
-    action (action: string = '', ...dataList: Array<TrackData | TrackDataFactory>): void {
-        if (typeof action !== 'string') throw new Error('缺少 action 参数')
+    track (...dataList: Array<TrackData | TrackDataFactory>): void {
+        this.composeCommonData(dataList).then((trackData: TrackData) => this.log(trackData))
+    }
+
+    @readonlyDecorator()
+    evt (action: string = '', ...dataList: Array<TrackData | TrackDataFactory>): void {
+        if (!action) throw new Error('缺少 action 参数')
         this.track(...dataList, {
-            action
+            action,
+            tracktype: 'event'
         })
     }
 
     @readonlyDecorator()
-    pv (trackData: TrackData) {
-        this.action(
-            '__pageView',
-            trackData,
-            this.genLastPageId(trackData)
-        )
+    pv (action: string = '', ...dataList: Array<TrackData | TrackDataFactory>) {
+        this.composeCommonData(dataList).then((trackData: TrackData) => {
+            this.log(Object.assign(
+                trackData,
+                this.genLastPageId(trackData),
+                {
+                    action,
+                    tracktype: 'pageview'
+                }
+            ))
+        })
     }
 
     @readonlyDecorator()

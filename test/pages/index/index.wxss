@@ -19,3 +19,20 @@
 .usermotto {
   margin-top: 200px;
 }
+
+.a {
+    width: 50rpx;
+    animation: btn  1s linear infinite;
+}
+
+@keyframes btn {
+    0% {
+        box-shadow: 0 0 0 0 red;        
+    }
+    50% {
+        box-shadow: 0 0 0 10rpx red;                
+    }
+    100% {
+        box-shadow: 0 0 0 0 red;                
+    }
+}

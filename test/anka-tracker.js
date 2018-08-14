@@ -1218,12 +1218,7 @@
                 tracker.onLaunchOption = options;
             }
         };
-        BxTracker.prototype.track = function () {
-            var _this = this;
-            var dataList = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                dataList[_i] = arguments[_i];
-            }
+        BxTracker.prototype.composeCommonData = function (dataList) {
             var tasks = [];
             dataList.map(function (data) {
                 if (typeof data === 'function') {
@@ -1235,24 +1230,42 @@
                     tasks.push(Promise.resolve(data));
                 }
             });
-            Promise.all(tasks).then(function (commonDataList) {
-                _this.log(Object.assign.apply(Object, [{}].concat(commonDataList)));
-            });
+            return Promise.all(tasks).then(function (commonDataList) { return Promise.resolve(Object.assign.apply(Object, [{}].concat(commonDataList))); });
         };
-        BxTracker.prototype.action = function (action) {
+        BxTracker.prototype.track = function () {
+            var _this = this;
+            var dataList = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                dataList[_i] = arguments[_i];
+            }
+            this.composeCommonData(dataList).then(function (trackData) { return _this.log(trackData); });
+        };
+        BxTracker.prototype.evt = function (action) {
             if (action === void 0) { action = ''; }
             var dataList = [];
             for (var _i = 1; _i < arguments.length; _i++) {
                 dataList[_i - 1] = arguments[_i];
             }
-            if (typeof action !== 'string')
+            if (!action)
                 throw new Error('缺少 action 参数');
             this.track.apply(this, dataList.concat([{
-                    action: action
+                    action: action,
+                    tracktype: 'event'
                 }]));
         };
-        BxTracker.prototype.pv = function (trackData) {
-            this.action('__pageView', trackData, this.genLastPageId(trackData));
+        BxTracker.prototype.pv = function (action) {
+            var _this = this;
+            if (action === void 0) { action = ''; }
+            var dataList = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                dataList[_i - 1] = arguments[_i];
+            }
+            this.composeCommonData(dataList).then(function (trackData) {
+                _this.log(Object.assign(trackData, _this.genLastPageId(trackData), {
+                    action: action,
+                    tracktype: 'pageview'
+                }));
+            });
         };
         BxTracker.prototype.genLastPageId = function (trackData) {
             var _a = this.last_page_id, last_page_id = _a === void 0 ? '' : _a;
@@ -1269,10 +1282,13 @@
         ], BxTracker.prototype, "extractOnLaunchOption", null);
         __decorate([
             readonlyDecorator()
+        ], BxTracker.prototype, "composeCommonData", null);
+        __decorate([
+            readonlyDecorator()
         ], BxTracker.prototype, "track", null);
         __decorate([
             readonlyDecorator()
-        ], BxTracker.prototype, "action", null);
+        ], BxTracker.prototype, "evt", null);
         __decorate([
             readonlyDecorator()
         ], BxTracker.prototype, "pv", null);
