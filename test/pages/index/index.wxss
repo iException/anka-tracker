@@ -1,38 +1,13 @@
-/**index.wxss**/
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+page {
+    box-sizing: border-box;
+    padding: 0 1rem;
 }
 
-.userinfo-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
+button {
+    margin: 2rem auto 0 auto;
 }
 
-.userinfo-nickname {
-  color: #aaa;
-}
-
-.usermotto {
-  margin-top: 200px;
-}
-
-.a {
-    width: 50rpx;
-    animation: btn  1s linear infinite;
-}
-
-@keyframes btn {
-    0% {
-        box-shadow: 0 0 0 0 red;        
-    }
-    50% {
-        box-shadow: 0 0 0 10rpx red;                
-    }
-    100% {
-        box-shadow: 0 0 0 0 red;                
-    }
+view {
+    font-size: 12px;
+    color: #666;
 }

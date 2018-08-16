@@ -1,15 +1,15 @@
-<!--index.wxml-->
-<view class="container">
-    <view class="userinfo">
-        <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-        <block wx:else>
-            <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-            <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-        </block>
-    </view>
-    <view class="usermotto">
-        <text class="user-motto">{{motto}}</text>
-    </view>
-</view>
+<button bind:tap="track1">SDK common 属性校验</button>
+<view>主要字段：sdk_version，track_id, open_id ,union_id</view>
 
-<button bind:tap="track" class="a">track</button>
+
+<button bind:tap="track2">SDK打点自定义属性测试</button>
+<view>除Common外的自定义属性</view>
+
+
+<button bind:tap="track3">SDK自定义属性覆盖Common属性</button>
+<view></view>
+
+<button bind:tap="track4">发起10次打点请求</button>
+<view>打点任务进入队列，大约需要5秒中全部发送</view>
+
+<button bind:tap="track5">前往log页</button>

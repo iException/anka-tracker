@@ -1025,7 +1025,7 @@
             }
         };
         QueueManager.prototype.run = function () {
-            this.executor.run();
+            setTimeout(this.executor.run.bind(this.executor), 0);
         };
         QueueManager.prototype.suspend = function (suspended) {
             this.updateStore(true);

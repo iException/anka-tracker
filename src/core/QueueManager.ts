@@ -91,7 +91,7 @@ export class QueueManager {
      * 任务的执行者
      */
     run (): void {
-        this.executor.run()
+        setTimeout(this.executor.run.bind(this.executor), 0)
     }
 
     suspend (suspended: boolean): void {
@@ -99,7 +99,6 @@ export class QueueManager {
         this.executor.suspend(suspended)
     }
 }
-
 
 class Executor {
     status: QUEUE_EXECUTOR_STATUS

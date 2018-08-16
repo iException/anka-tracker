@@ -1,5 +1,0 @@
-{
-    "name": "@anka-dev/tracker",
-    "main": "dist/index.min.js",
-    "type": "library"
-}

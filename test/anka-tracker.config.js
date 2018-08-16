@@ -3,7 +3,7 @@ module.exports = {
     httpMethod: 'POST',
     trackerHost: 'http://bi.baixing.com:9001/dw-web/log',
     retry: 0,                       // 失败重试次数
-    interval: 2012,                 // 每组请求发送时间间隔 ms
+    interval: 1000,                 // 每组请求发送时间间隔 ms
     groupMaxLength: 2,              // 每组包含打点数
     timestampKey: 'timestamp_ms',   // 时间戳 key
     attachActionToUrl: true,        // 是否要将 action 添加到 url 后
