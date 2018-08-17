@@ -26,7 +26,7 @@ export class WeChatSender implements Sender {
             const trackAction = data.action || ''
             url = /\/$/.test(this.url) ? `${this.url}${trackAction}` : `${this.url}/${trackAction}`
         }
-        helper.log('打点数据校验结果:', task, WeChatCommonDataVender.validate(data))
+        helper.log('打点数据校验结果:', task, WeChatCommonDataVender.validate(data, this.config.dataScheme))
 
         return wechat.request({
             url,

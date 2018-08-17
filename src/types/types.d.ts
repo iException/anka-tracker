@@ -34,7 +34,13 @@ declare interface InilialzeConfig {
     queueMaxLength?: number,
 
     // 可在这里指定一些 common data
-    commonData?: Object,
+    commonData?: object,
+
+    // common data 校验规则
+    dataScheme?: object,
+
+    // 是否检测渠道参数
+    detectChanel?: boolean,
 
     // 是否要把 commonData.action 添加到 trackerHost 后
     attachActionToUrl?: boolean,

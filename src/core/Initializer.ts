@@ -1,5 +1,3 @@
-import { Sender } from './Sender'
-
 const DEFAULT_CONFIG: InilialzeConfig = {
     debug: true,
     httpMethod: 'POST',
@@ -9,19 +7,23 @@ const DEFAULT_CONFIG: InilialzeConfig = {
     timestampKey: 'timestamp_ms',
     queueMaxLength: 500,
     commonData: {},
+    dataScheme: {},
+    detectChanel: true,
     attachActionToUrl: false,
     extractOnLaunchOption: true
 }
 
 export class Initializer implements InilialzeConfig {
     readonly debug: boolean
-    readonly httpMethod: string
-    readonly trackerHost: string
     readonly retry: number
     readonly interval: number
-    readonly commonData: Object
-    readonly groupMaxLength: number
+    readonly commonData: object
+    readonly dataScheme: object
+    readonly httpMethod: string
+    readonly trackerHost: string
+    readonly detectChanel: boolean
     readonly timestampKey?: string
+    readonly groupMaxLength: number
     readonly queueMaxLength: number
     readonly attachActionToUrl: boolean
     readonly extractOnLaunchOption: boolean

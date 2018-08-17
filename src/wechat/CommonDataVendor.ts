@@ -81,18 +81,4 @@ export class WeChatCommonDataVender extends CommonDataVendor {
             Math.random().toString(16).replace('.', '') + '-' +
             String(Math.random() * 31242).replace('.', '').slice(0, 8)
     }
-
-    validate (data: any): Object {
-        const result = {
-            required: <string[]>[],
-            optional: <string[]>[]
-        }
-        const dataScheme = <any>WeChatCommonDataVender.dataScheme
-        for (let key in dataScheme) {
-            if (dataScheme.hasOwnProperty(key) && !data[key]) {
-                result[dataScheme[key] === 1 ? 'required' : 'optional'].push(key)
-            }
-        }
-        return result
-    }
 }

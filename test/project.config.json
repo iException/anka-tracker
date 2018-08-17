@@ -42,10 +42,10 @@
 					"query": "name=joe"
 				},
 				{
-					"id": -1,
+					"id": 1,
 					"name": "query.src参数的入口测试",
 					"pathName": "pages/index/index",
-					"query": "name=joe&src=123"
+					"query": "name=joe&src=123&tsrc=a_b_c_d_d__d_d"
 				}
 			]
 		}

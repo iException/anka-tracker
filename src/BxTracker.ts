@@ -10,9 +10,7 @@ export class BxTracker extends Tracker {
             config = require('./anka-tracker.config.js')
         } catch (err) {}
         const tracker = new BxTracker(config)
-        if (config.extractOnLaunchOption) {
-            tracker.extractOnLaunchOption()
-        }
+        tracker.extractOnLaunchOption()
         return tracker
     }
 
@@ -43,8 +41,23 @@ export class BxTracker extends Tracker {
         }
 
         function onAppLaunch (options: onLaunchOption) {
-            tracker.onLaunchOption = options
+            if (tracker.config.extractOnLaunchOption) {
+                tracker.onLaunchOption = options
+            }
+            if (tracker.config.detectChanel) {
+                tracker.detectChanel(options.query.tsrc)
+            }
         }
+    }
+
+    @readonlyDecorator()
+    detectChanel (tsrc: string) {
+        if (!tsrc) return
+        const data: { [index: string]: string } = {}
+        tsrc.split(/_+/).forEach((src, index) => {
+            data[`source_src_key_${index + 1}`] = src
+        })
+        this.evt('channel', data)
     }
 
     @readonlyDecorator()
