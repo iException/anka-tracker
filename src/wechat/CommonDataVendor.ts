@@ -4,10 +4,10 @@ import { CommonDataVendor } from '../core/CommonDataVendor'
 import { version } from '../../package.json'        // [!] (tslint plugin) FatalError: Ensure that the files supplied to lint have a .ts, .tsx, .d.ts, .js or .jsx extension.
 
 export class WeChatCommonDataVender extends CommonDataVendor {
-    getCommonData (config: {
+    getCommonData (options: {
         onLaunchOption: onLaunchOption
     }): Promise<any> {
-        const { onLaunchOption = <onLaunchOption>{} } = config
+        const { onLaunchOption = <onLaunchOption>{} } = options
         return Promise.all([
             this.getTrackId(),
             wechat.getSystemInfo(),
@@ -50,7 +50,7 @@ export class WeChatCommonDataVender extends CommonDataVendor {
     }
 
     getTrackId (): Promise<string> {
-        return wechat.getStorage(WeChatCommonDataVender.TRACK_ID_KEY)
+        return wechat.getStorage(this.config.trackIdKey)
             .then((trackId: string) => {
                 return Promise.resolve(trackId)
             })
@@ -62,13 +62,13 @@ export class WeChatCommonDataVender extends CommonDataVendor {
     setTrackId (): Promise<string> {
         const UUID = this.genUUId()
         return wechat.setStorage({
-            key: WeChatCommonDataVender.TRACK_ID_KEY,
+            key: this.config.trackIdKey,
             data: UUID
         }).then(() => {
             return Promise.resolve(UUID)
         }, () => {
             wechat.setStorage({
-                key: WeChatCommonDataVender.TRACK_ID_KEY,
+                key: this.config.trackIdKey,
                 data: UUID
             })
             return Promise.resolve(UUID)

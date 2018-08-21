@@ -1,6 +1,7 @@
-export abstract class CommonDataVendor {
-    static TRACK_ID_KEY = 'bx_track_id'
+import { Initializer } from './Initializer'
 
+export abstract class CommonDataVendor {
+    protected config: Initializer
     /**
      * 0 可选，1 必选
      */
@@ -42,6 +43,10 @@ export abstract class CommonDataVendor {
     //     page_level: 1,
     //     sdk_version: 1
     // }
+
+    constructor (config: Initializer) {
+        this.config = config
+    }
 
     abstract getCommonData (config: {
         onLaunchOption: onLaunchOption

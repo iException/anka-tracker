@@ -27,8 +27,11 @@ declare interface InilialzeConfig {
     // 每组会包含的任务数
     groupMaxLength?: number,
 
-    // 添加到打点数据上的时间戳
+    // 添加到打点数据上的时间戳键名
     timestampKey?: string,
+
+    // 用于追踪每个用户的 ID 键名
+    trackIdKey?: string,
 
     // 队列最大长度，超出后新的任务会被丢弃
     queueMaxLength?: number,

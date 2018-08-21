@@ -1,3 +1,5 @@
+import { read } from "fs";
+
 const DEFAULT_CONFIG: InilialzeConfig = {
     debug: true,
     httpMethod: 'POST',
@@ -5,6 +7,7 @@ const DEFAULT_CONFIG: InilialzeConfig = {
     interval: 1000,
     groupMaxLength: 5,
     timestampKey: 'timestamp_ms',
+    trackIdKey: '__track_id',
     queueMaxLength: 500,
     commonData: {},
     dataScheme: {},
@@ -21,6 +24,7 @@ export class Initializer implements InilialzeConfig {
     readonly dataScheme: object
     readonly httpMethod: string
     readonly trackerHost: string
+    readonly trackIdKey?: string
     readonly detectChanel: boolean
     readonly timestampKey?: string
     readonly groupMaxLength: number

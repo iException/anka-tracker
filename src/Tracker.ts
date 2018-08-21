@@ -29,8 +29,8 @@ export class Tracker {
         helper.DEBUG = this.config.debug
         // 默认暂停 task runner
         this.core.queueManager.suspend(true)
-        this.networkDetector = new WeChatNetworkDetector()
-        this.commonDataVendor = new WeChatCommonDataVender()
+        this.networkDetector = new WeChatNetworkDetector(this.config)
+        this.commonDataVendor = new WeChatCommonDataVender(this.config)
     }
 
     @readonlyDecorator()

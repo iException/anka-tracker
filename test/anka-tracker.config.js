@@ -6,6 +6,7 @@ module.exports = {
     interval: 1000,                 // 每组请求发送时间间隔 ms
     groupMaxLength: 2,              // 每组包含打点数
     timestampKey: 'timestamp_ms',   // 时间戳 key
+    trackIdKey: 'track_id',         // track_id key
     attachActionToUrl: true,        // 是否要将 action 添加到 url 后
     extractOnLaunchOption: true,    // 是否要从 onLaunch 中获取 option 参数并用于 commonData
     detectChanel: true,             // 是否检测渠道参数

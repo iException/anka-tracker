@@ -746,7 +746,8 @@
     };
 
     var CommonDataVendor = (function () {
-        function CommonDataVendor() {
+        function CommonDataVendor(config) {
+            this.config = config;
         }
         CommonDataVendor.validate = function (data, dataScheme) {
             var result = {
@@ -760,19 +761,18 @@
             }
             return result;
         };
-        CommonDataVendor.TRACK_ID_KEY = 'bx_track_id';
         return CommonDataVendor;
     }());
 
-    var version = "0.0.6";
+    var version = "0.0.7";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
         function WeChatCommonDataVender() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        WeChatCommonDataVender.prototype.getCommonData = function (config) {
-            var _a = config.onLaunchOption, onLaunchOption = _a === void 0 ? {} : _a;
+        WeChatCommonDataVender.prototype.getCommonData = function (options) {
+            var _a = options.onLaunchOption, onLaunchOption = _a === void 0 ? {} : _a;
             return Promise.all([
                 this.getTrackId(),
                 getSystemInfo(),
@@ -807,7 +807,7 @@
         };
         WeChatCommonDataVender.prototype.getTrackId = function () {
             var _this = this;
-            return getStorage(WeChatCommonDataVender.TRACK_ID_KEY)
+            return getStorage(this.config.trackIdKey)
                 .then(function (trackId) {
                 return Promise.resolve(trackId);
             })
@@ -816,15 +816,16 @@
             });
         };
         WeChatCommonDataVender.prototype.setTrackId = function () {
+            var _this = this;
             var UUID = this.genUUId();
             return setStorage({
-                key: WeChatCommonDataVender.TRACK_ID_KEY,
+                key: this.config.trackIdKey,
                 data: UUID
             }).then(function () {
                 return Promise.resolve(UUID);
             }, function () {
                 setStorage({
-                    key: WeChatCommonDataVender.TRACK_ID_KEY,
+                    key: _this.config.trackIdKey,
                     data: UUID
                 });
                 return Promise.resolve(UUID);
@@ -869,7 +870,8 @@
     }());
 
     var NetworkDetector = (function () {
-        function NetworkDetector() {
+        function NetworkDetector(config) {
+            this.config = config;
         }
         return NetworkDetector;
     }());
@@ -1064,6 +1066,7 @@
         interval: 1000,
         groupMaxLength: 5,
         timestampKey: 'timestamp_ms',
+        trackIdKey: '__track_id',
         queueMaxLength: 500,
         commonData: {},
         dataScheme: {},
@@ -1086,8 +1089,8 @@
             this.core = new Core(this.config);
             helper.DEBUG = this.config.debug;
             this.core.queueManager.suspend(true);
-            this.networkDetector = new WeChatNetworkDetector();
-            this.commonDataVendor = new WeChatCommonDataVender();
+            this.networkDetector = new WeChatNetworkDetector(this.config);
+            this.commonDataVendor = new WeChatCommonDataVender(this.config);
         }
         Tracker.prototype.init = function (commonData) {
             if (this.sender)
