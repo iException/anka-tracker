@@ -1,6 +1,6 @@
 {
   "name": "@anka-dev/tracker",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "dist/anka-tracker.min.js",
   "scripts": {
