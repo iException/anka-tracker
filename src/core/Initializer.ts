@@ -1,5 +1,3 @@
-import { read } from "fs";
-
 const DEFAULT_CONFIG: InilialzeConfig = {
     debug: true,
     httpMethod: 'POST',
@@ -14,6 +12,7 @@ const DEFAULT_CONFIG: InilialzeConfig = {
     detectChanel: true,
     attachActionToUrl: false,
     extractOnLaunchOption: true
+    // beforeSend: (data: TrackData): TrackData => data
 }
 
 export class Initializer implements InilialzeConfig {
@@ -31,6 +30,7 @@ export class Initializer implements InilialzeConfig {
     readonly queueMaxLength: number
     readonly attachActionToUrl: boolean
     readonly extractOnLaunchOption: boolean
+    readonly beforeSend: (data: TrackData) => TrackData
 
     constructor (config: InilialzeConfig = {}) {
         Object.assign(this, DEFAULT_CONFIG, config)

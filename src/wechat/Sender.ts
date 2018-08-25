@@ -18,7 +18,7 @@ export class WeChatSender implements Sender {
 
     send (task: Task): Promise<Task> {
         let url = this.url
-        const data = <TrackData>{
+        let data = <TrackData>{
             ...this.commonData,
             ...task.data
         }
@@ -26,8 +26,10 @@ export class WeChatSender implements Sender {
             const trackAction = data.action || ''
             url = /\/$/.test(this.url) ? `${this.url}${trackAction}` : `${this.url}/${trackAction}`
         }
+        if (typeof this.config.beforeSend === 'function') {
+            data = this.config.beforeSend(data)
+        }
         helper.log('打点数据校验结果:', task, WeChatCommonDataVender.validate(data, this.config.dataScheme))
-
         return wechat.request({
             url,
             method: this.config.httpMethod,

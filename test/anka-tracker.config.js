@@ -13,12 +13,17 @@ module.exports = {
     commonData: {
         __debug: 1,                 // 默认值是 1
         event_type: 'bx_wxmini',
-        tracktype: 'event',         // event 或pageview
+        tracktype: 'event',         // event 或 pageview
         app_type: 'wx',
         app_id: 'wxfd853a0b03d0aea9',
         app_name: '宠咖秀',
         template_version: 'v1.5.0',
         app_category: '服务类目-宠物（非医院类）',
+
+        // 测试 beforeSend 过滤方法
+        value_null: null,
+        value_undefined: undefined,
+        value_empty: ''
     },
     dataScheme: {                   // 数据校验规则：1 required，0 optional
         event_type: 1,
@@ -57,5 +62,14 @@ module.exports = {
         last_page_id: 0,
         page_level: 1,
         sdk_version: 1
+    },
+    beforeSend (data) {
+        for (let key in data) {
+            if (data.hasOwnProperty(key) && (data[key] === null || data[key] === void(0))
+            ) {
+                delete data[key]
+            }
+        }
+        return data
     }
 }

@@ -853,6 +853,9 @@
                 var trackAction = data.action || '';
                 url = /\/$/.test(this.url) ? "" + this.url + trackAction : this.url + "/" + trackAction;
             }
+            if (typeof this.config.beforeSend === 'function') {
+                data = this.config.beforeSend(data);
+            }
             helper.log('打点数据校验结果:', task, WeChatCommonDataVender.validate(data, this.config.dataScheme));
             return request({
                 url: url,

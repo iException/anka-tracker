@@ -50,6 +50,9 @@ declare interface InilialzeConfig {
 
     // 是否从 App.onLaunch 中获取 option 用于设置 common data
     extractOnLaunchOption?: boolean,
+
+    // 请求发送前的自定义处理函数
+    beforeSend?: (data: TrackData) => TrackData
 }
 
 declare type Timer = any
