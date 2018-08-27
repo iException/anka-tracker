@@ -51,6 +51,10 @@ declare interface InilialzeConfig {
     // 是否从 App.onLaunch 中获取 option 用于设置 common data
     extractOnLaunchOption?: boolean,
 
+    // common data 中 source_src_key 字段值取自
+    // onLaunch 钩子中 options.query[sourceSrcKey] 的值
+    sourceSrcKey?: string,
+
     // 请求发送前的自定义处理函数
     beforeSend?: (data: TrackData) => TrackData
 }

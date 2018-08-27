@@ -1,7 +1,5 @@
-import { Initializer } from './Initializer'
-
 export abstract class CommonDataVendor {
-    protected config: Initializer
+    protected config: InilialzeConfig
     /**
      * 0 可选，1 必选
      */
@@ -44,7 +42,7 @@ export abstract class CommonDataVendor {
     //     sdk_version: 1
     // }
 
-    constructor (config: Initializer) {
+    constructor (config: InilialzeConfig) {
         this.config = config
     }
 

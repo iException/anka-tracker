@@ -3,14 +3,13 @@ import helper from '../helper'
 import { Task } from '../core/Task'
 import { Sender } from '../core/Sender'
 import { WeChatCommonDataVender } from './CommonDataVendor'
-import { Initializer } from '../core/Initializer'
 
 export class WeChatSender implements Sender {
     url: string
     commonData: Object
-    config: Initializer
+    config: InilialzeConfig
 
-    constructor (config: Initializer, commonData?: Object) {
+    constructor (config: InilialzeConfig, commonData?: Object) {
         this.url = config.trackerHost
         this.config = config
         this.commonData = commonData

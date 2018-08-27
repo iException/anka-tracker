@@ -2,14 +2,36 @@ module.exports = {
     debug: true,
     httpMethod: 'POST',
     trackerHost: 'http://bi.baixing.com:9001/dw-web/log',
-    retry: 0,                       // 失败重试次数
-    interval: 1000,                 // 每组请求发送时间间隔 ms
-    groupMaxLength: 2,              // 每组包含打点数
-    timestampKey: 'timestamp_ms',   // 时间戳 key
-    trackIdKey: 'track_id',         // track_id key
-    attachActionToUrl: true,        // 是否要将 action 添加到 url 后
-    extractOnLaunchOption: true,    // 是否要从 onLaunch 中获取 option 参数并用于 commonData
-    detectChanel: true,             // 是否检测渠道参数
+
+    // 失败重试次数
+    retry: 0,
+
+    // 每组请求发送时间间隔 ms
+    interval: 1000,
+
+    // 每组包含打点数
+    groupMaxLength: 2,
+
+    // 时间戳 key
+    timestampKey: 'timestamp_ms',
+
+    // track_id key
+    trackIdKey: 'track_id',
+
+    // 是否要将 action 添加到 url 后
+    attachActionToUrl: true,
+
+    // 是否要从 onLaunch 中获取 option 参数并用于 commonData
+    extractOnLaunchOption: true,
+
+    // 是否检测渠道参数
+    detectChanel: true,
+
+    // common data 中 source_src_key 字段值取自 onLaunch
+    // 钩子中 options.query[sourceSrcKey] 的值
+    sourceSrcKey: 'tsrc',
+
+    // 预设的基础数据
     commonData: {
         __debug: 1,                 // 默认值是 1
         event_type: 'bx_wxmini',

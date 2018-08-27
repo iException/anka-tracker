@@ -9,6 +9,7 @@ const DEFAULT_CONFIG: InilialzeConfig = {
     queueMaxLength: 500,
     commonData: {},
     dataScheme: {},
+    sourceSrcKey: 'src',
     detectChanel: true,
     attachActionToUrl: false,
     extractOnLaunchOption: true
@@ -16,22 +17,6 @@ const DEFAULT_CONFIG: InilialzeConfig = {
 }
 
 export class Initializer implements InilialzeConfig {
-    readonly debug: boolean
-    readonly retry: number
-    readonly interval: number
-    readonly commonData: object
-    readonly dataScheme: object
-    readonly httpMethod: string
-    readonly trackerHost: string
-    readonly trackIdKey?: string
-    readonly detectChanel: boolean
-    readonly timestampKey?: string
-    readonly groupMaxLength: number
-    readonly queueMaxLength: number
-    readonly attachActionToUrl: boolean
-    readonly extractOnLaunchOption: boolean
-    readonly beforeSend: (data: TrackData) => TrackData
-
     constructor (config: InilialzeConfig = {}) {
         Object.assign(this, DEFAULT_CONFIG, config)
     }

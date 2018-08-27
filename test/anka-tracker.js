@@ -772,6 +772,7 @@
             return _super !== null && _super.apply(this, arguments) || this;
         }
         WeChatCommonDataVender.prototype.getCommonData = function (options) {
+            var _this = this;
             var _a = options.onLaunchOption, onLaunchOption = _a === void 0 ? {} : _a;
             return Promise.all([
                 this.getTrackId(),
@@ -799,7 +800,7 @@
                     source_path: onLaunchOption.path,
                     source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId || '' : '',
                     source_params: query,
-                    source_src_key: onLaunchOption.query ? onLaunchOption.query.src || '' : '',
+                    source_src_key: onLaunchOption.query ? onLaunchOption.query[_this.config.sourceSrcKey] || '' : '',
                     track_id: trackId
                 };
                 return Promise.resolve(commonData);
@@ -1073,6 +1074,7 @@
         queueMaxLength: 500,
         commonData: {},
         dataScheme: {},
+        sourceSrcKey: 'src',
         detectChanel: true,
         attachActionToUrl: false,
         extractOnLaunchOption: true
