@@ -45,6 +45,9 @@ declare interface InilialzeConfig {
     // 是否检测渠道参数
     detectChanel?: boolean,
 
+    // 是否捕获启动事件
+    detectLaunch?: boolean,
+
     // 是否要把 commonData.action 添加到 trackerHost 后
     attachActionToUrl?: boolean,
 

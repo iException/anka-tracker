@@ -27,6 +27,9 @@ module.exports = {
     // 是否检测渠道参数
     detectChanel: true,
 
+    // 是否捕获启动事件
+    detectLaunch: true,
+
     // common data 中 source_src_key 字段值取自 onLaunch
     // 钩子中 options.query[sourceSrcKey] 的值
     sourceSrcKey: 'tsrc',

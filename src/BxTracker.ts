@@ -44,8 +44,11 @@ export class BxTracker extends Tracker {
             if (tracker.config.extractOnLaunchOption) {
                 tracker.onLaunchOption = options
             }
+            if (tracker.config.detectLaunch) {
+                tracker.evt('app_start', {})
+            }
             if (tracker.config.detectChanel) {
-                tracker.detectChanel(options.query.tsrc)
+                tracker.detectChanel(options.query[tracker.config.sourceSrcKey])
             }
         }
     }

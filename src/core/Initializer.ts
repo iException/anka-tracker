@@ -11,6 +11,7 @@ const DEFAULT_CONFIG: InilialzeConfig = {
     dataScheme: {},
     sourceSrcKey: 'src',
     detectChanel: true,
+    detectLaunch: true,
     attachActionToUrl: false,
     extractOnLaunchOption: true
     // beforeSend: (data: TrackData): TrackData => data

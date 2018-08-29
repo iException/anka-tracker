@@ -16,7 +16,7 @@ export enum QUEUE_EXECUTOR_STATUS {
  * 管理器不考虑任务执行细节，以及何时暂停
  */
 export class QueueManager {
-    public config: Initializer
+    public config: InilialzeConfig
     private sender: Sender
     private queue: Array<Task>
     private failedQueue: Array<Task>
@@ -24,7 +24,7 @@ export class QueueManager {
     private lastStoreUpdate: number   // 上次缓存更新时间
     private executor: Executor
 
-    constructor (config: Initializer) {
+    constructor (config: InilialzeConfig) {
         this.queue = []
         this.failedQueue = []
         this.config = config

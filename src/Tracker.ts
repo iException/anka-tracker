@@ -18,7 +18,7 @@ export class Tracker {
     private core: Core
     private store: Store
     private sender: Sender
-    public config: Initializer
+    public config: InilialzeConfig
     public networkDetector: NetworkDetector
     public commonDataVendor: CommonDataVendor
     public onLaunchOption: onLaunchOption
