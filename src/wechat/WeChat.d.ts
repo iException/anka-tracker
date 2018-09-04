@@ -116,7 +116,7 @@ interface IAnimation {
     /**
      * 同transform-function matrix
      */
-    matrix(a, b, c, d, tx, ty): IAnimation;
+    matrix(a: number, b: number, c: number, d: number, tx: number, ty: number): IAnimation;
     /**
      * 同transform-function matrix3d
      */
@@ -346,6 +346,23 @@ interface onLaunchOption {
     [key: string]: any;
 }
 
+interface onLoadOptions {
+    query: {
+        [key: string]: any;
+    };
+}
+
+interface onPageShowOption {
+    /**
+     * 打开小程序的query
+     */
+    query: {
+        [key: string]: any;
+    };
+
+    [key: string]: any;
+}
+
 interface Application {
     setData: (obj: any) => void;
 }
@@ -377,7 +394,9 @@ declare function getCurrentPages(): Page[];
 
 interface Page {
     route: string;
+    options: object,
     setData: (obj: any) => void;
+    [key: string]: any;
 }
 
 interface PageConstructor {

@@ -10,8 +10,6 @@ App({
         this.onLaunchOption = options
         this.tracker = tracker
 
-        console.log(tracker)
-
         // // 自己随便来点数据
 
         //

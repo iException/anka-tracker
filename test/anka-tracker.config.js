@@ -21,18 +21,22 @@ module.exports = {
     // 是否要将 action 添加到 url 后
     attachActionToUrl: true,
 
-    // 是否要从 onLaunch 中获取 option 参数并用于 commonData
-    extractOnLaunchOption: true,
-
     // 是否检测渠道参数
     detectChanel: true,
 
     // 是否捕获启动事件
-    detectLaunch: true,
+    detectAppStart: true,
 
     // common data 中 source_src_key 字段值取自 onLaunch
     // 钩子中 options.query[sourceSrcKey] 的值
     sourceSrcKey: 'tsrc',
+
+    // 劫持 page onShow 方法开启自动 pv 打点
+    autoPageView (currentPage, callback) {
+        callback({
+            action: '__viewPage'
+        })
+    },
 
     // 预设的基础数据
     commonData: {

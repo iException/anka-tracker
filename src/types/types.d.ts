@@ -46,13 +46,13 @@ declare interface InilialzeConfig {
     detectChanel?: boolean,
 
     // 是否捕获启动事件
-    detectLaunch?: boolean,
+    detectAppStart?: boolean,
 
     // 是否要把 commonData.action 添加到 trackerHost 后
     attachActionToUrl?: boolean,
 
-    // 是否从 App.onLaunch 中获取 option 用于设置 common data
-    extractOnLaunchOption?: boolean,
+    // 劫持 page onShow 方法开启自动 pv 打点
+    autoPageView?: (currentPage: Application, callback: (trackData: TrackData) => void) => void,
 
     // common data 中 source_src_key 字段值取自
     // onLaunch 钩子中 options.query[sourceSrcKey] 的值

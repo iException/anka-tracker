@@ -111,3 +111,17 @@ export function onNetworkStatusChange (callback: Function): void {
         callback(res.networkType)
     })
 }
+
+/**
+ * 劫持
+ * 小程序钩子函数
+ * @param key params 某个属性函数的 key
+ * @param wrapper params[key] 的外层封装
+ */
+export function functionWrapper (object: any, key: string, wrapper: Function) {
+    const attr = object[key]
+    object[key] = function (arg: any) {
+        wrapper.call(this, arg)
+        return attr && attr.call(this, arg)
+    }
+}

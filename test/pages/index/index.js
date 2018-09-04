@@ -4,13 +4,18 @@ const app = getApp()
 
 Page({
     pageId: 'index',
+
+    onLoad (query) {
+        // console.log(query)
+    },
+
     onShow () {
-        getApp().tracker.pv('__viewPage', {
-            page_id: this.pageId,
-            page_type: 'common',
-            page_title: '首页-我的家族',
-            page_level: 'tabbar_page'
-        })
+        // getApp().tracker.pv('__viewPage', {
+        //     page_id: this.pageId,
+        //     page_type: 'common',
+        //     page_title: '首页-我的家族',
+        //     page_level: 'tabbar_page'
+        // })
     },
 
 

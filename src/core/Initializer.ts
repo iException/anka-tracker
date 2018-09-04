@@ -11,9 +11,9 @@ const DEFAULT_CONFIG: InilialzeConfig = {
     dataScheme: {},
     sourceSrcKey: 'src',
     detectChanel: true,
-    detectLaunch: true,
+    detectAppStart: true,
     attachActionToUrl: false,
-    extractOnLaunchOption: true
+    // autoPageView?: (onShowOptions: onPageShowOption, callback: (trackData: TrackData) => void) => void
     // beforeSend: (data: TrackData): TrackData => data
 }
 

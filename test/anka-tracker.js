@@ -94,6 +94,13 @@
             callback(res.networkType);
         });
     }
+    function functionWrapper(object, key, wrapper) {
+        var attr = object[key];
+        object[key] = function (arg) {
+            wrapper.call(this, arg);
+            return attr && attr.call(this, arg);
+        };
+    }
 
     var STORAGE_KEY = 'tracker_tasks';
     var WeChatStore = (function () {
@@ -1076,9 +1083,8 @@
         dataScheme: {},
         sourceSrcKey: 'src',
         detectChanel: true,
-        detectLaunch: true,
+        detectAppStart: true,
         attachActionToUrl: false,
-        extractOnLaunchOption: true
     };
     var Initializer = (function () {
         function Initializer(config) {
@@ -1143,9 +1149,44 @@
             try {
                 config = require('./anka-tracker.config.js');
             }
-            catch (err) { }
+            catch (err) {
+                console.log('anka-tracker 缺少配置文件');
+            }
             var tracker = new BxTracker(config);
-            tracker.extractOnLaunchOption();
+            var AppConstructor = App;
+            var PageConstructor = Page;
+            App = function (opts) {
+                functionWrapper(opts, 'onLaunch', function (options) {
+                    tracker.onLaunchOption = options;
+                    if (tracker.config.detectChanel) {
+                        tracker.detectChanel(options.query[tracker.config.sourceSrcKey]);
+                    }
+                });
+                if (tracker.config.detectAppStart) {
+                    functionWrapper(opts, 'onShow', function (options) {
+                        tracker.evt('app_start', {});
+                    });
+                }
+                return AppConstructor(opts);
+            };
+            Page = function (opts) {
+                functionWrapper(opts, 'onLoad', function (options) {
+                    this.__page_params__ = options;
+                });
+                if (typeof tracker.config.autoPageView === 'function') {
+                    functionWrapper(opts, 'onShow', function () {
+                        var currentPage = getCurrentPages().slice().pop();
+                        tracker.config.autoPageView(currentPage, function (trackData) {
+                            tracker.pv(trackData.action, trackData, {
+                                page_id: currentPage.route,
+                                page_url: currentPage.route,
+                                page_params: lib.stringify(currentPage.__page_params__)
+                            });
+                        });
+                    });
+                }
+                return PageConstructor(opts);
+            };
             return tracker;
         };
         BxTracker.prototype.asyncInitWithCommonData = function (commonData) {
@@ -1159,29 +1200,6 @@
                 helper.log('初始化失败');
                 console.log(err);
             });
-        };
-        BxTracker.prototype.extractOnLaunchOption = function () {
-            var tracker = this;
-            var _App = App;
-            App = function (object) {
-                var AppLaunchHook = object.onLaunch;
-                object['onLaunch'] = function (options) {
-                    onAppLaunch.call(this, options);
-                    AppLaunchHook && AppLaunchHook.call(this, options);
-                };
-                _App(object);
-            };
-            function onAppLaunch(options) {
-                if (tracker.config.extractOnLaunchOption) {
-                    tracker.onLaunchOption = options;
-                }
-                if (tracker.config.detectLaunch) {
-                    tracker.evt('app_start', {});
-                }
-                if (tracker.config.detectChanel) {
-                    tracker.detectChanel(options.query[tracker.config.sourceSrcKey]);
-                }
-            }
         };
         BxTracker.prototype.detectChanel = function (tsrc) {
             if (!tsrc)
@@ -1235,25 +1253,24 @@
                 dataList[_i - 1] = arguments[_i];
             }
             this.composeCommonData(dataList).then(function (trackData) {
-                _this.log(Object.assign(trackData, _this.genLastPageId(trackData), {
+                _this.log(Object.assign(trackData, _this.genLastPageUrl(trackData), {
                     action: action,
                     tracktype: 'pageview'
                 }));
             });
         };
-        BxTracker.prototype.genLastPageId = function (trackData) {
-            var _a = this.last_page_id, last_page_id = _a === void 0 ? '' : _a;
-            this.last_page_id = trackData.page_id;
+        BxTracker.prototype.genLastPageUrl = function (trackData) {
+            var _a = this, _b = _a.last_page_id, last_page_id = _b === void 0 ? '' : _b, _c = _a.last_page_url, last_page_url = _c === void 0 ? '' : _c;
+            this.last_page_url = trackData.page_url || '';
+            this.last_page_id = trackData.page_id || '';
             return {
-                last_page_id: last_page_id
+                last_page_id: last_page_id,
+                last_page_url: last_page_url
             };
         };
         __decorate([
             readonlyDecorator()
         ], BxTracker.prototype, "asyncInitWithCommonData", null);
-        __decorate([
-            readonlyDecorator()
-        ], BxTracker.prototype, "extractOnLaunchOption", null);
         __decorate([
             readonlyDecorator()
         ], BxTracker.prototype, "detectChanel", null);
@@ -1271,7 +1288,7 @@
         ], BxTracker.prototype, "pv", null);
         __decorate([
             readonlyDecorator()
-        ], BxTracker.prototype, "genLastPageId", null);
+        ], BxTracker.prototype, "genLastPageUrl", null);
         return BxTracker;
     }(Tracker));
     var tracker = BxTracker.generateTrackerInstance();

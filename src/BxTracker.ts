@@ -1,16 +1,59 @@
+import qs from 'qs'
 import { Tracker } from './Tracker'
 import helper, { readonlyDecorator } from './helper'
+import { functionWrapper } from './wechat/utils'
 
 export class BxTracker extends Tracker {
     private last_page_id: string
+    private last_page_url: string
 
     static generateTrackerInstance (): Tracker {
         let config = <InilialzeConfig>{}
         try {
             config = require('./anka-tracker.config.js')
-        } catch (err) {}
+        } catch (err) {
+            console.log('anka-tracker 缺少配置文件')
+        }
         const tracker = new BxTracker(config)
-        tracker.extractOnLaunchOption()
+        const AppConstructor = App
+        const PageConstructor = Page
+
+        App = <AppConstructor>function (opts) {
+            functionWrapper(opts, 'onLaunch', function (options: onLaunchOption) {
+                tracker.onLaunchOption = options
+                if (tracker.config.detectChanel) {
+                    tracker.detectChanel(options.query[tracker.config.sourceSrcKey])
+                }
+            })
+
+            if (tracker.config.detectAppStart) {
+                functionWrapper(opts, 'onShow', function (options: onLaunchOption) {
+                    tracker.evt('app_start', {})
+                })
+            }
+            return AppConstructor(opts)
+        }
+
+        Page = <PageConstructor>function (opts) {
+            functionWrapper(opts, 'onLoad', function (options: onLoadOptions) {
+                this.__page_params__ = options
+            })
+
+            if (typeof tracker.config.autoPageView === 'function') {
+                functionWrapper(opts, 'onShow', function () {
+                    const currentPage = <Page>getCurrentPages().slice().pop()
+                    tracker.config.autoPageView(currentPage, (trackData: TrackData) => {
+                        tracker.pv(trackData.action, trackData, {
+                            page_id: currentPage.route,
+                            page_url: currentPage.route,
+                            page_params: qs.stringify(currentPage.__page_params__)
+                        })
+                    })
+                })
+            }
+            return PageConstructor(opts)
+        }
+
         return tracker
     }
 
@@ -24,33 +67,6 @@ export class BxTracker extends Tracker {
             helper.log('初始化失败')
             console.log(err)
         })
-    }
-
-    @readonlyDecorator()
-    extractOnLaunchOption (): void {
-        const tracker = this
-        const _App = App
-
-        App = <AppConstructor>function (object) {
-            const AppLaunchHook = object.onLaunch
-            object['onLaunch'] = function (options) {
-                onAppLaunch.call(this, options)
-                AppLaunchHook && AppLaunchHook.call(this, options)
-            }
-            _App(object)
-        }
-
-        function onAppLaunch (options: onLaunchOption) {
-            if (tracker.config.extractOnLaunchOption) {
-                tracker.onLaunchOption = options
-            }
-            if (tracker.config.detectLaunch) {
-                tracker.evt('app_start', {})
-            }
-            if (tracker.config.detectChanel) {
-                tracker.detectChanel(options.query[tracker.config.sourceSrcKey])
-            }
-        }
     }
 
     @readonlyDecorator()
@@ -97,7 +113,7 @@ export class BxTracker extends Tracker {
         this.composeCommonData(dataList).then((trackData: TrackData) => {
             this.log(Object.assign(
                 trackData,
-                this.genLastPageId(trackData),
+                this.genLastPageUrl(trackData),
                 {
                     action,
                     tracktype: 'pageview'
@@ -107,11 +123,16 @@ export class BxTracker extends Tracker {
     }
 
     @readonlyDecorator()
-    genLastPageId (trackData: TrackData): TrackData {
-        const { last_page_id = '' } = this
-        this.last_page_id = trackData.page_id
+    genLastPageUrl (trackData: TrackData): TrackData {
+        const {
+            last_page_id = '',
+            last_page_url = ''
+        } = this
+        this.last_page_url = trackData.page_url || ''
+        this.last_page_id = trackData.page_id || ''
         return {
-            last_page_id
+            last_page_id,
+            last_page_url
         }
     }
 }
