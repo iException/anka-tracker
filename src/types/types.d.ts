@@ -2,6 +2,8 @@ declare type TrackData = {
     [index: string]: any
 }
 
+declare type TrackAction = string
+
 declare type TrackDataFactory = (callback: (trackData: TrackData) => void) => void
 
 declare interface InilialzeConfig {

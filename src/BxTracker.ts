@@ -100,7 +100,7 @@ export class BxTracker extends Tracker {
     }
 
     @readonlyDecorator()
-    evt (action: string = '', ...dataList: Array<TrackData | TrackDataFactory>): void {
+    evt (action: TrackAction = '', ...dataList: Array<TrackData | TrackDataFactory>): void {
         if (!action) throw new Error('缺少 action 参数')
         this.track(...dataList, {
             action,
@@ -109,7 +109,7 @@ export class BxTracker extends Tracker {
     }
 
     @readonlyDecorator()
-    pv (action: string = '', ...dataList: Array<TrackData | TrackDataFactory>) {
+    pv (action: TrackAction = '', ...dataList: Array<TrackData | TrackDataFactory>) {
         this.composeCommonData(dataList).then((trackData: TrackData) => {
             this.log(Object.assign(
                 trackData,
