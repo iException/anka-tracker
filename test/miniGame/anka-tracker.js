@@ -1150,43 +1150,45 @@
                 config = require('./anka-tracker.config.js');
             }
             catch (err) {
-                console.log('anka-tracker 缺少配置文件');
+                console.log('anka-tracker 缺少配置文件', err);
             }
             var tracker = new BxTracker(config);
-            var AppConstructor = App;
-            var PageConstructor = Page;
-            App = function (opts) {
-                functionWrapper(opts, 'onLaunch', function (options) {
-                    tracker.onLaunchOption = options;
-                    if (tracker.config.detectChanel) {
-                        tracker.detectChanel(options.query[tracker.config.sourceSrcKey]);
-                    }
-                });
-                if (tracker.config.detectAppStart) {
-                    functionWrapper(opts, 'onShow', function (options) {
-                        tracker.evt('app_start', {});
+            if (typeof App === void (0) || typeof Page === void (0)) {
+                var AppConstructor_1 = App;
+                var PageConstructor_1 = Page;
+                App = function (opts) {
+                    functionWrapper(opts, 'onLaunch', function (options) {
+                        tracker.onLaunchOption = options;
+                        if (tracker.config.detectChanel) {
+                            tracker.detectChanel(options.query[tracker.config.sourceSrcKey]);
+                        }
                     });
-                }
-                return AppConstructor(opts);
-            };
-            Page = function (opts) {
-                functionWrapper(opts, 'onLoad', function (options) {
-                    this.__page_params__ = options;
-                });
-                if (typeof tracker.config.autoPageView === 'function') {
-                    functionWrapper(opts, 'onShow', function () {
-                        var currentPage = getCurrentPages().slice().pop();
-                        tracker.config.autoPageView(currentPage, function (trackData) {
-                            tracker.pv(trackData.action, trackData, {
-                                page_id: currentPage.route,
-                                page_url: currentPage.route,
-                                page_params: lib.stringify(currentPage.__page_params__)
+                    if (tracker.config.detectAppStart) {
+                        functionWrapper(opts, 'onShow', function (options) {
+                            tracker.evt('app_start', {});
+                        });
+                    }
+                    return AppConstructor_1(opts);
+                };
+                Page = function (opts) {
+                    functionWrapper(opts, 'onLoad', function (options) {
+                        this.__page_params__ = options;
+                    });
+                    if (typeof tracker.config.autoPageView === 'function') {
+                        functionWrapper(opts, 'onShow', function () {
+                            var currentPage = getCurrentPages().slice().pop();
+                            tracker.config.autoPageView(currentPage, function (trackData) {
+                                tracker.pv(trackData.action, trackData, {
+                                    page_id: currentPage.route,
+                                    page_url: currentPage.route,
+                                    page_params: lib.stringify(currentPage.__page_params__)
+                                });
                             });
                         });
-                    });
-                }
-                return PageConstructor(opts);
-            };
+                    }
+                    return PageConstructor_1(opts);
+                };
+            }
             return tracker;
         };
         BxTracker.prototype.asyncInitWithCommonData = function (commonData) {

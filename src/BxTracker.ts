@@ -12,46 +12,49 @@ export class BxTracker extends Tracker {
         try {
             config = require('./anka-tracker.config.js')
         } catch (err) {
-            console.log('anka-tracker 缺少配置文件')
+            console.log('anka-tracker 缺少配置文件', err)
         }
         const tracker = new BxTracker(config)
-        const AppConstructor = App
-        const PageConstructor = Page
 
-        App = <AppConstructor>function (opts) {
-            functionWrapper(opts, 'onLaunch', function (options: onLaunchOption) {
-                tracker.onLaunchOption = options
-                if (tracker.config.detectChanel) {
-                    tracker.detectChanel(options.query[tracker.config.sourceSrcKey])
-                }
-            })
+        if (typeof App === void (0) || typeof Page === void (0)) {
+            const AppConstructor = App
+            const PageConstructor = Page
 
-            if (tracker.config.detectAppStart) {
-                functionWrapper(opts, 'onShow', function (options: onLaunchOption) {
-                    tracker.evt('app_start', {})
+            App = <AppConstructor>function (opts) {
+                functionWrapper(opts, 'onLaunch', function (options: onLaunchOption) {
+                    tracker.onLaunchOption = options
+                    if (tracker.config.detectChanel) {
+                        tracker.detectChanel(options.query[tracker.config.sourceSrcKey])
+                    }
                 })
+
+                if (tracker.config.detectAppStart) {
+                    functionWrapper(opts, 'onShow', function (options: onLaunchOption) {
+                        tracker.evt('app_start', {})
+                    })
+                }
+                return AppConstructor(opts)
             }
-            return AppConstructor(opts)
-        }
 
-        Page = <PageConstructor>function (opts) {
-            functionWrapper(opts, 'onLoad', function (options: onLoadOptions) {
-                this.__page_params__ = options
-            })
+            Page = <PageConstructor>function (opts) {
+                functionWrapper(opts, 'onLoad', function (options: onLoadOptions) {
+                    this.__page_params__ = options
+                })
 
-            if (typeof tracker.config.autoPageView === 'function') {
-                functionWrapper(opts, 'onShow', function () {
-                    const currentPage = <Page>getCurrentPages().slice().pop()
-                    tracker.config.autoPageView(currentPage, (trackData: TrackData) => {
-                        tracker.pv(trackData.action, trackData, {
-                            page_id: currentPage.route,
-                            page_url: currentPage.route,
-                            page_params: qs.stringify(currentPage.__page_params__)
+                if (typeof tracker.config.autoPageView === 'function') {
+                    functionWrapper(opts, 'onShow', function () {
+                        const currentPage = <Page>getCurrentPages().slice().pop()
+                        tracker.config.autoPageView(currentPage, (trackData: TrackData) => {
+                            tracker.pv(trackData.action, trackData, {
+                                page_id: currentPage.route,
+                                page_url: currentPage.route,
+                                page_params: qs.stringify(currentPage.__page_params__)
+                            })
                         })
                     })
-                })
+                }
+                return PageConstructor(opts)
             }
-            return PageConstructor(opts)
         }
 
         return tracker

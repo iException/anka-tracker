@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/anka-tracker.min.js",
   "scripts": {
-    "dev": "rollup -c build/rollup.config.dev.js -w",
+    "dev:program": "rollup -c build/rollup.config.program.dev.js -w",
+    "dev:game": "rollup -c build/rollup.config.game.dev.js -w",
     "build": "rollup -c build/rollup.config.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

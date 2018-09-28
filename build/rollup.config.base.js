@@ -17,7 +17,7 @@ export default {
     ],
     output: {
         name: 'Tracker',
-        file: 'test/anka-tracker.js',
+        file: 'test/miniProgram/anka-tracker.js',
         format: 'umd',
         sourcemap: true,
         globals: {
