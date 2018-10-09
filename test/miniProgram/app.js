@@ -1,4 +1,8 @@
-const { tracker } = require('./anka-tracker.js')
+const { BxTracker } = require('./anka-tracker.js')
+const tracker = BxTracker.generateTrackerInstance({
+    detectChanel: false,
+    detectAppStart: true
+})
 
 //app.js
 App({

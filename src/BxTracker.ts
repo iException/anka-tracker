@@ -7,16 +7,22 @@ export class BxTracker extends Tracker {
     private last_page_id: string
     private last_page_url: string
 
-    static generateTrackerInstance (): Tracker {
-        let config = <InilialzeConfig>{}
-        try {
-            config = require('./anka-tracker.config.js')
-        } catch (err) {
-            console.log('anka-tracker 缺少配置文件', err)
-        }
-        const tracker = new BxTracker(config)
+    static generateTrackerInstance (customConfig?: InilialzeConfig): Tracker {
+        let defaultConfig = <InilialzeConfig>{}
 
-        if (typeof App === void (0) || typeof Page === void (0)) {
+        try {
+            const config = require('./anka-tracker.config.js')
+
+            Object.assign(defaultConfig, config)
+        } catch (err) {
+            !customConfig && console.log('缺少配置文件 anka-tracker.config.js', err)
+        }
+
+        customConfig && Object.assign(defaultConfig, customConfig)
+
+        const tracker = new BxTracker(defaultConfig)
+
+        if (typeof App !== void (0) && typeof Page !== void (0)) {
             const AppConstructor = App
             const PageConstructor = Page
 
@@ -55,6 +61,8 @@ export class BxTracker extends Tracker {
                 }
                 return PageConstructor(opts)
             }
+        } else {
+            console.log('当前未处于小程序环境！')
         }
 
         return tracker

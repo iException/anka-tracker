@@ -771,7 +771,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.2.0";
+    var version = "0.3.0";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -1144,16 +1144,18 @@
         function BxTracker() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        BxTracker.generateTrackerInstance = function () {
-            var config = {};
+        BxTracker.generateTrackerInstance = function (customConfig) {
+            var defaultConfig = {};
             try {
-                config = require('./anka-tracker.config.js');
+                var config = require('./anka-tracker.config.js');
+                Object.assign(defaultConfig, config);
             }
             catch (err) {
-                console.log('anka-tracker 缺少配置文件', err);
+                !customConfig && console.log('缺少配置文件 anka-tracker.config.js', err);
             }
-            var tracker = new BxTracker(config);
-            if (typeof App === void (0) || typeof Page === void (0)) {
+            customConfig && Object.assign(defaultConfig, customConfig);
+            var tracker = new BxTracker(defaultConfig);
+            if (typeof App !== void (0) && typeof Page !== void (0)) {
                 var AppConstructor_1 = App;
                 var PageConstructor_1 = Page;
                 App = function (opts) {
@@ -1188,6 +1190,9 @@
                     }
                     return PageConstructor_1(opts);
                 };
+            }
+            else {
+                console.log('当前未处于小程序环境！');
             }
             return tracker;
         };

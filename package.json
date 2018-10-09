@@ -6,8 +6,10 @@
   "scripts": {
     "dev:program": "rollup -c build/rollup.config.program.dev.js -w",
     "dev:game": "rollup -c build/rollup.config.game.dev.js -w",
-    "build": "rollup -c build/rollup.config.prod.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup -c build/rollup.config.prod.js"
+  },
+  "anka": {
+    "type": "lib"
   },
   "repository": {
     "type": "git",
