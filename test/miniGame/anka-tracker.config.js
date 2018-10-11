@@ -27,7 +27,7 @@ module.exports = {
     // 劫持 page onShow 方法开启自动 pv 打点，小游戏上禁用
     autoPageView: false,
 
-    // 是否检测渠道参数，小游戏上禁用
+    // 是否检测渠道参数
     detectChanel: true,
 
     // 是否捕获启动事件，小游戏上禁用

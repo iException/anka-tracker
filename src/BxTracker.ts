@@ -22,7 +22,8 @@ export class BxTracker extends Tracker {
 
         const tracker = new BxTracker(defaultConfig)
 
-        if (typeof App !== void (0) && typeof Page !== void (0)) {
+        // ############## 小程序 ##############
+        if (typeof App !== 'undefined' && typeof Page !== 'undefined') {
             const AppConstructor = App
             const PageConstructor = Page
 
@@ -61,8 +62,14 @@ export class BxTracker extends Tracker {
                 }
                 return PageConstructor(opts)
             }
-        } else {
-            console.log('当前未处于小程序环境！')
+        // ############## 小游戏 ##############
+        } else if (wx && wx.getLaunchOptionsSync) {
+            tracker.onLaunchOption = wx.getLaunchOptionsSync()
+
+            if (tracker.config.detectChanel) {
+                tracker.detectChanel(tracker.onLaunchOption.query[tracker.config.sourceSrcKey])
+            }
+            console.log('当前处于小游戏环境！')
         }
 
         return tracker

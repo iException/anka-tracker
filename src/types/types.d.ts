@@ -47,13 +47,13 @@ declare interface InilialzeConfig {
     // 是否检测渠道参数
     detectChanel?: boolean,
 
-    // 是否捕获启动事件
+    // 是否捕获启动事件，小游戏上禁用
     detectAppStart?: boolean,
 
     // 是否要把 commonData.action 添加到 trackerHost 后
     attachActionToUrl?: boolean,
 
-    // 劫持 page onShow 方法开启自动 pv 打点
+    // 劫持 page onShow 方法开启自动 pv 打点，小游戏上禁用
     autoPageView?: (currentPage: Application, callback: (trackData: TrackData) => void) => void,
 
     // common data 中 source_src_key 字段值取自

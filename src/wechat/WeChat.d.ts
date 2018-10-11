@@ -2756,4 +2756,6 @@ declare var wx: {
         complete?: Function;
     }): void;
 
+    // # 小游戏 #
+    getLaunchOptionsSync(): onLaunchOption
 }

@@ -20,9 +20,20 @@
 			"current": -1,
 			"list": []
 		},
-		"game": {
-			"currentL": -1,
+		"plugin": {
+			"current": -1,
 			"list": []
+		},
+		"game": {
+			"current": 0,
+			"list": [
+				{
+					"id": 0,
+					"name": "123123",
+					"query": "tsrc=1_2_3_4",
+					"scene": "1005"
+				}
+			]
 		},
 		"miniprogram": {
 			"current": -1,

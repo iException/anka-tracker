@@ -37,7 +37,7 @@ export class WeChatCommonDataVender extends CommonDataVendor {
                 template_version: '',
                 app_category: '',
                 source: onLaunchOption.scene,
-                source_path: onLaunchOption.path,
+                source_path: onLaunchOption.path || '',
                 source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId || '' : '',
                 source_params: query,
                 source_src_key: onLaunchOption.query ? onLaunchOption.query[this.config.sourceSrcKey] || '' : '',

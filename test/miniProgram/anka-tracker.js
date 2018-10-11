@@ -771,7 +771,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.3.0";
+    var version = "0.3.1";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -804,7 +804,7 @@
                     template_version: '',
                     app_category: '',
                     source: onLaunchOption.scene,
-                    source_path: onLaunchOption.path,
+                    source_path: onLaunchOption.path || '',
                     source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId || '' : '',
                     source_params: query,
                     source_src_key: onLaunchOption.query ? onLaunchOption.query[_this.config.sourceSrcKey] || '' : '',
@@ -1155,7 +1155,7 @@
             }
             customConfig && Object.assign(defaultConfig, customConfig);
             var tracker = new BxTracker(defaultConfig);
-            if (typeof App !== void (0) && typeof Page !== void (0)) {
+            if (typeof App !== 'undefined' && typeof Page !== 'undefined') {
                 var AppConstructor_1 = App;
                 var PageConstructor_1 = Page;
                 App = function (opts) {
@@ -1191,8 +1191,12 @@
                     return PageConstructor_1(opts);
                 };
             }
-            else {
-                console.log('当前未处于小程序环境！');
+            else if (wx && wx.getLaunchOptionsSync) {
+                tracker.onLaunchOption = wx.getLaunchOptionsSync();
+                if (tracker.config.detectChanel) {
+                    tracker.detectChanel(tracker.onLaunchOption.query[tracker.config.sourceSrcKey]);
+                }
+                console.log('当前处于小游戏环境！');
             }
             return tracker;
         };

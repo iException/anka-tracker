@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://user-images.githubusercontent.com/10026019/44260701-d84b6e80-a247-11e8-9d79-5f82be615c84.png" width="300"/>
-  <b>tracker</b>
+  <b>&nbsp;&nbsp;&nbsp;tracker</b>
 </p>
 
 <p align="center">
@@ -8,6 +8,14 @@
 	<img src="https://badge.fury.io/js/%40anka-dev%2Ftracker.svg"/>
 	</a>
 </p>
+
+# 功能
+
+anka-tracker 会将打点任务缓存到队列中，对打点任务做限流处理，避免占用太多HTTP请求导致业务逻辑请求无法顺利完成。另外，当离线或应用关闭时任务会被暂停，直到重新连线/重启后，tracker 会继续先前未完成的任务。
+
+详细配置见 [./src/types/types.d.ts](./src/types/types.d.ts)
+
+适用于小程序/小游戏。
 
 # 使用
 
@@ -71,6 +79,17 @@ onLaunch (options) {
 },
 ```
 
+除上面的示例之外，你也可以选择用更灵活的方式初始化：
+
+```javascript
+const { BxTracker } = require('./anka-tracker.js')
+const tracker = BxTracker.generateTrackerInstance({
+    // 在这里传入配置，而不使用 anka-tracker.config.js
+    detectChanel: false,
+    detectAppStart: true
+})
+```
+
 ## API
 
 提供两个打点 API 供开发者使用，建议配置 `autoPageView` 使用自动打点。
@@ -94,3 +113,5 @@ getApp().tracker.pv('__viewPage', {
 - [./src/types/BxTracker.d.ts](./src/types/BxTracker.d.ts)
 
 - [./src/types/types.d.ts](./src/types/types.d.ts)
+
+- [示例](./test)

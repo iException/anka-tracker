@@ -771,7 +771,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.2.0";
+    var version = "0.3.1";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -804,7 +804,7 @@
                     template_version: '',
                     app_category: '',
                     source: onLaunchOption.scene,
-                    source_path: onLaunchOption.path,
+                    source_path: onLaunchOption.path || '',
                     source_app_id: onLaunchOption.referrerInfo ? onLaunchOption.referrerInfo.appId || '' : '',
                     source_params: query,
                     source_src_key: onLaunchOption.query ? onLaunchOption.query[_this.config.sourceSrcKey] || '' : '',
@@ -1144,16 +1144,18 @@
         function BxTracker() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        BxTracker.generateTrackerInstance = function () {
-            var config = {};
+        BxTracker.generateTrackerInstance = function (customConfig) {
+            var defaultConfig = {};
             try {
-                config = require('./anka-tracker.config.js');
+                var config = require('./anka-tracker.config.js');
+                Object.assign(defaultConfig, config);
             }
             catch (err) {
-                console.log('anka-tracker 缺少配置文件', err);
+                !customConfig && console.log('缺少配置文件 anka-tracker.config.js', err);
             }
-            var tracker = new BxTracker(config);
-            if (typeof App === void (0) || typeof Page === void (0)) {
+            customConfig && Object.assign(defaultConfig, customConfig);
+            var tracker = new BxTracker(defaultConfig);
+            if (typeof App !== 'undefined' && typeof Page !== 'undefined') {
                 var AppConstructor_1 = App;
                 var PageConstructor_1 = Page;
                 App = function (opts) {
@@ -1188,6 +1190,13 @@
                     }
                     return PageConstructor_1(opts);
                 };
+            }
+            else if (wx && wx.getLaunchOptionsSync) {
+                tracker.onLaunchOption = wx.getLaunchOptionsSync();
+                if (tracker.config.detectChanel) {
+                    tracker.detectChanel(tracker.onLaunchOption.query[tracker.config.sourceSrcKey]);
+                }
+                console.log('当前处于小游戏环境！');
             }
             return tracker;
         };
