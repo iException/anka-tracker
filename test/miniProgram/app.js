@@ -1,5 +1,6 @@
 const { BxTracker } = require('./anka-tracker.js')
 const tracker = BxTracker.generateTrackerInstance({
+    trackerHost: 'https://example.com/log',
     detectChanel: false,
     detectAppStart: true
 })

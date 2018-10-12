@@ -771,7 +771,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.3.1";
+    var version = "0.3.2";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -1302,7 +1302,7 @@
         ], BxTracker.prototype, "genLastPageUrl", null);
         return BxTracker;
     }(Tracker));
-    var tracker = BxTracker.generateTrackerInstance();
+    var tracker = BxTracker.generateTrackerInstance({});
 
     exports.Tracker = Tracker;
     exports.BxTracker = BxTracker;

@@ -155,4 +155,4 @@ export class BxTracker extends Tracker {
     }
 }
 
-export const tracker = BxTracker.generateTrackerInstance()
+export const tracker = BxTracker.generateTrackerInstance({})
