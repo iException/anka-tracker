@@ -751,6 +751,7 @@
         parse: parse,
         stringify: stringify_1
     };
+    var lib_3 = lib.stringify;
 
     var CommonDataVendor = (function () {
         function CommonDataVendor(config) {
@@ -771,7 +772,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.3.1";
+    var version = "0.3.3";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -1183,7 +1184,7 @@
                                 tracker.pv(trackData.action, trackData, {
                                     page_id: currentPage.route,
                                     page_url: currentPage.route,
-                                    page_params: lib.stringify(currentPage.__page_params__)
+                                    page_params: lib_3(currentPage.__page_params__)
                                 });
                             });
                         });
@@ -1302,7 +1303,7 @@
         ], BxTracker.prototype, "genLastPageUrl", null);
         return BxTracker;
     }(Tracker));
-    var tracker = BxTracker.generateTrackerInstance();
+    var tracker = BxTracker.generateTrackerInstance({});
 
     exports.Tracker = Tracker;
     exports.BxTracker = BxTracker;

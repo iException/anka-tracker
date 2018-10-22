@@ -1,4 +1,4 @@
-import qs from 'qs'
+import * as qs from 'qs'
 import { Tracker } from './Tracker'
 import helper, { readonlyDecorator } from './helper'
 import { functionWrapper } from './wechat/utils'
@@ -100,7 +100,7 @@ export class BxTracker extends Tracker {
     @readonlyDecorator()
     composeCommonData (dataList: Array<TrackData | TrackDataFactory>): Promise<TrackData> {
         const tasks: Promise<TrackData>[] = []
-        dataList.map(data => {
+        dataList.map((data: Function) => {
             if (typeof data === 'function') {
                 tasks.push(new Promise(resolve => {
                     data(resolve)
