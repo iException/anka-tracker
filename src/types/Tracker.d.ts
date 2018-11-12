@@ -13,5 +13,6 @@ export declare class Tracker {
     public onLaunchOption: onLaunchOption
     init (url: string, commonData?: Object): void
     log (data: TrackData): void
+    forceLog (data: TrackData): void
     handleNetworkStatusChange (networdkType: string | Error): void
 }

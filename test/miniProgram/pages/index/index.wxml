@@ -12,4 +12,7 @@
 <button bind:tap="track4">发起10次打点请求</button>
 <view>打点任务进入队列，大约需要5秒中全部发送</view>
 
-<button bind:tap="track5">前往log页</button>
+<button bind:tap="track5">发起10次强制打点</button>
+<view>打点任务进入队列，大约需要5秒中全部发送</view>
+
+<button bind:tap="track6">前往log页</button>

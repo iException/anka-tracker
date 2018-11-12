@@ -2,7 +2,13 @@ export default {
     DEBUG: true,
 
     log (...e: any[]): void {
-        this.DEBUG && console.log('%c[🔍 tracker]', 'color:rgba(118,147,92,1);', ...e)
+        const time = new Date()
+        const t = `${this.format(time.getHours())}:${this.format(time.getMinutes())}:${this.format(time.getSeconds())}`
+        this.DEBUG && console.log(`%c[🔍 tracker] ${t}`, 'color:rgba(118,147,92,1);', ...e)
+    },
+
+    format (val: string | number = '', fixed: number = 2): string {
+        return ('00' + val).slice(0 - fixed)
     }
 }
 

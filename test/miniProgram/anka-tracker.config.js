@@ -1,7 +1,7 @@
 module.exports = {
     debug: true,
     httpMethod: 'POST',
-    trackerHost: 'http://bi.baixing.com:9001/dw-web/log',
+    trackerHost: 'https://jsonplaceholder.typicode.com/posts/',
 
     // 失败重试次数
     retry: 0,

@@ -118,9 +118,23 @@ export class BxTracker extends Tracker {
     }
 
     @readonlyDecorator()
+    forceTrack (...dataList: Array<TrackData | TrackDataFactory>): void {
+        this.composeCommonData(dataList).then((trackData: TrackData) => this.forceLog(trackData))
+    }
+
+    @readonlyDecorator()
     evt (action: TrackAction = '', ...dataList: Array<TrackData | TrackDataFactory>): void {
         if (!action) throw new Error('缺少 action 参数')
         this.track(...dataList, {
+            action,
+            tracktype: 'event'
+        })
+    }
+
+    @readonlyDecorator()
+    forceEvt (action: TrackAction = '', ...dataList: Array<TrackData | TrackDataFactory>): void {
+        if (!action) throw new Error('缺少 action 参数')
+        this.forceTrack(...dataList, {
             action,
             tracktype: 'event'
         })

@@ -13,6 +13,8 @@ export declare class BxTracker extends Tracker {
 
     evt (action: TrackAction, ...dataList: Array<TrackData | TrackDataFactory>): void
 
+    forceEvt (action: TrackAction, ...dataList: Array<TrackData | TrackDataFactory>): void
+
     pv (action: TrackAction, ...dataList: Array<TrackData | TrackDataFactory>): void
 
     genLastPageUrl (trackData: TrackData): TrackData

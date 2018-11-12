@@ -4,7 +4,7 @@ const VERSION = '0.0.1'
 module.exports = {
     debug: ENV === 'prod' ? false : true,
     httpMethod: 'POST',
-    trackerHost: 'https://www.baixing.com/c/wxmini',
+    trackerHost: 'https://jsonplaceholder.typicode.com/posts/',
 
     // 失败重试次数
     retry: 1,

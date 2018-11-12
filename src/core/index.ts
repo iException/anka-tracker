@@ -23,4 +23,8 @@ export default class Core {
     log (trackData: Task): void {
         this.queueManager.push(trackData)
     }
+
+    forceLog (trackData: Task): void {
+        this.queueManager.intrude(trackData)
+    }
 }

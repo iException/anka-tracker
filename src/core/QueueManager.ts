@@ -63,6 +63,14 @@ export class QueueManager {
     }
 
     /**
+     * 插队执行任务。不计入队列，不论成败只执行一次
+     * @param task Task
+     */
+    intrude (task: Task): void {
+        this.sender.send(task)
+    }
+
+    /**
      * 取出任务执行
      */
     pop (): Task[] {
@@ -88,7 +96,7 @@ export class QueueManager {
     }
 
     /**
-     * 任务的执行者
+     * 启动任务执行器
      */
     run (): void {
         setTimeout(this.executor.run.bind(this.executor), 0)

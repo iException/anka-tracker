@@ -130,7 +130,14 @@
             for (var _i = 0; _i < arguments.length; _i++) {
                 e[_i] = arguments[_i];
             }
-            this.DEBUG && console.log.apply(console, ['%c[🔍 tracker]', 'color:rgba(118,147,92,1);'].concat(e));
+            var time = new Date();
+            var t = this.format(time.getHours()) + ":" + this.format(time.getMinutes()) + ":" + this.format(time.getSeconds());
+            this.DEBUG && console.log.apply(console, ["%c[\uD83D\uDD0D tracker] " + t, 'color:rgba(118,147,92,1);'].concat(e));
+        },
+        format: function (val, fixed) {
+            if (val === void 0) { val = ''; }
+            if (fixed === void 0) { fixed = 2; }
+            return ('00' + val).slice(0 - fixed);
         }
     };
     function readonlyDecorator() {
@@ -970,6 +977,9 @@
                 this.run();
             }
         };
+        QueueManager.prototype.intrude = function (task) {
+            this.sender.send(task);
+        };
         QueueManager.prototype.pop = function () {
             var failedQueueLength = this.failedQueue.length;
             var groupMaxLength = this.config.groupMaxLength;
@@ -1068,6 +1078,9 @@
         Core.prototype.log = function (trackData) {
             this.queueManager.push(trackData);
         };
+        Core.prototype.forceLog = function (trackData) {
+            this.queueManager.intrude(trackData);
+        };
         return Core;
     }());
 
@@ -1128,6 +1141,11 @@
             data[this.config.timestampKey] = now;
             this.core.log(new Task(data));
         };
+        Tracker.prototype.forceLog = function (data) {
+            var now = Date.now();
+            data[this.config.timestampKey] = now;
+            this.core.forceLog(new Task(data));
+        };
         __decorate([
             readonlyDecorator()
         ], Tracker.prototype, "init", null);
@@ -1137,6 +1155,9 @@
         __decorate([
             readonlyDecorator()
         ], Tracker.prototype, "log", null);
+        __decorate([
+            readonlyDecorator()
+        ], Tracker.prototype, "forceLog", null);
         return Tracker;
     }());
 
@@ -1244,6 +1265,14 @@
             }
             this.composeCommonData(dataList).then(function (trackData) { return _this.log(trackData); });
         };
+        BxTracker.prototype.forceTrack = function () {
+            var _this = this;
+            var dataList = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                dataList[_i] = arguments[_i];
+            }
+            this.composeCommonData(dataList).then(function (trackData) { return _this.forceLog(trackData); });
+        };
         BxTracker.prototype.evt = function (action) {
             if (action === void 0) { action = ''; }
             var dataList = [];
@@ -1253,6 +1282,19 @@
             if (!action)
                 throw new Error('缺少 action 参数');
             this.track.apply(this, dataList.concat([{
+                    action: action,
+                    tracktype: 'event'
+                }]));
+        };
+        BxTracker.prototype.forceEvt = function (action) {
+            if (action === void 0) { action = ''; }
+            var dataList = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                dataList[_i - 1] = arguments[_i];
+            }
+            if (!action)
+                throw new Error('缺少 action 参数');
+            this.forceTrack.apply(this, dataList.concat([{
                     action: action,
                     tracktype: 'event'
                 }]));
@@ -1294,7 +1336,13 @@
         ], BxTracker.prototype, "track", null);
         __decorate([
             readonlyDecorator()
+        ], BxTracker.prototype, "forceTrack", null);
+        __decorate([
+            readonlyDecorator()
         ], BxTracker.prototype, "evt", null);
+        __decorate([
+            readonlyDecorator()
+        ], BxTracker.prototype, "forceEvt", null);
         __decorate([
             readonlyDecorator()
         ], BxTracker.prototype, "pv", null);

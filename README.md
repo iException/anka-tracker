@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/10026019/44260701-d84b6e80-a247-11e8-9d79-5f82be615c84.png" width="300"/>
-  <b>&nbsp;&nbsp;&nbsp;tracker</b>
+  <img src="https://user-images.githubusercontent.com/10026019/48325653-9fb60800-e671-11e8-9e5f-46e625d8159f.png" width="300"/>
+  <b>&nbsp;&nbsp;&nbsp;Tracker</b>
 </p>
 
 <p align="center">
@@ -8,6 +8,8 @@
 	<img src="https://badge.fury.io/js/%40anka-dev%2Ftracker.svg"/>
 	</a>
 </p>
+
+小程序打点库，用于统计用户行为数据。
 
 # 功能
 
@@ -23,42 +25,41 @@ anka-tracker 会将打点任务缓存到队列中，对打点任务做限流处�
 
 以下两种安装方式随意选择:
 
-- 通过 npm 安装: `npm install @anka-dev/tracker --save`
+- 通过 npm 安装: `$ npm install @anka-dev/tracker --save`
 - 下载该仓库下 dist/anka-tracker.min.js 文件
 
 ## 初始化
 
 将 anka-tracker.min.js 和 配置文件 anka-tracker.config.js 放置在小程序的开发目录中（两者必须在同一文件夹下）
 
-```shell
-├── anka-tracker.config.js
-├── anka-tracker.js
-├── anka-tracker.js.map
-├── anka.config.json
-├── app.js
-├── app.json
-├── app.wxss
-├── dist
-│   └── index.js
-├── pages
-│   ├── index
-│   └── log
-├── project.config.json
-└── utils
-    └── util.js
+```diff
++ ├── anka-tracker.config.js
++ ├── anka-tracker.js
+  ├── anka.config.json
+  ├── app.js
+  ├── app.json
+  ├── app.wxss
+  ├── dist
+  │   └── index.js
+  ├── pages
+  │   ├── index
+  │   └── log
+  ├── project.config.json
+  └── utils
+  	└── util.js
 ```
 
 在 `app.js` 中引入 tracker：
 
 ```javascript
-// app.js
+/* app.js */
 const { tracker } = require('./anka-tracker.js')
 ```
 
 并在恰当的时机初始化：
 
 ```javascript
-// app.js
+/* app.js */
 onLaunch (options) {
 	this.onLaunchOption = options
 	this.tracker = tracker
@@ -92,7 +93,7 @@ const tracker = BxTracker.generateTrackerInstance({
 
 ## API
 
-提供两个打点 API 供开发者使用，建议配置 `autoPageView` 使用自动打点。
+提供两个通用打点 API 供开发者使用，建议配置 `autoPageView` 使用自动打点。
 
 ```javascript
 getApp().tracker.evt('click_btn', {
@@ -107,6 +108,10 @@ getApp().tracker.pv('__viewPage', {
 	page_level: 'tabbar_page'
 })
 ```
+
+值得注意的是，目前在iOS机型上，小程序 `onHide` 事件中，`setTimeout` 不会在预期的时间触发，回调函数会被冻结直到小程序触发 `onShow` 钩子。换句话说，`setTimeout(() => {console.log('hello anka!')}, 2000)` 不会在小程序 `onHide` 触发后（`onShow` 之前）输出 `hello anka!`。
+
+对于这样的情况，我们可以使用 `forceEvt` 方法强制执行一次打点请求。与 `evt` 不同的是，`forceEvt` 会立刻执行请求，不论成功与否均不会重试。通常情况下，不建议使用这个 API。
 
 # 参考
 

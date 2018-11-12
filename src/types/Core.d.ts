@@ -10,4 +10,6 @@ export declare class Core {
     init (config: { sender: Sender, store?: Store }): void
 
     log (trackData: Task): void
+
+    forceLog (trackData: Task): void
 }

@@ -18,6 +18,9 @@ Page({
         // })
     },
 
+    onHide () {
+        getApp().tracker.forceEvt('force_log')
+    },
 
     track1 () {
         getApp().tracker.evt('click_btn')
@@ -62,6 +65,28 @@ Page({
     },
 
     track5 () {
+        for (let i = 0; i < 10; i++) {
+            getApp().tracker.forceEvt(
+                // action 必须指定
+                'action_force_log',
+
+                // 可以传入对象
+                {
+                    page_type: 'common',
+                    page_level: 'second_page',
+                },
+
+                // 也可以传入方法，注意必须调用 callback
+                callback => {
+                    callback({
+                        test_key: 'post_moment'
+                    })
+                }
+            )
+        }
+    },
+
+    track6 () {
         wx.navigateTo({
             url: '/pages/log/log'
         })

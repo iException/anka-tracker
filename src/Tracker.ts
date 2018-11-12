@@ -67,4 +67,11 @@ export class Tracker {
         data[this.config.timestampKey] = now
         this.core.log(new Task(data))
     }
+
+    @readonlyDecorator()
+    forceLog (data: TrackData): void {
+        const now = Date.now()
+        data[this.config.timestampKey] = now
+        this.core.forceLog(new Task(data))
+    }
 }
