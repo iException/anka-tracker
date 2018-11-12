@@ -1,9 +1,9 @@
-<p align="center">
+<p>
   <img src="https://user-images.githubusercontent.com/10026019/48325653-9fb60800-e671-11e8-9e5f-46e625d8159f.png" width="300"/>
   <b>&nbsp;&nbsp;&nbsp;Tracker</b>
 </p>
 
-<p align="center">
+<p>
 	<a href="https://www.npmjs.com/package/@anka-dev/tracker">
 	<img src="https://badge.fury.io/js/%40anka-dev%2Ftracker.svg"/>
 	</a>
@@ -109,14 +109,14 @@ getApp().tracker.pv('__viewPage', {
 })
 ```
 
-值得注意的是，目前在iOS机型上，小程序 `onHide` 事件中，`setTimeout` 不会在预期的时间触发，回调函数会被冻结直到小程序触发 `onShow` 钩子。换句话说，`setTimeout(() => {console.log('hello anka!')}, 2000)` 不会在小程序 `onHide` 触发后（`onShow` 之前）输出 `hello anka!`。
+值得 **注意** 的是，目前在iOS机型上，小程序 `onHide` 事件中，`setTimeout` 不会在预期的时间触发，回调函数会被冻结直到小程序触发 `onShow` 钩子。换句话说，`setTimeout(() => {console.log('hello anka!')}, 2000)` 不会在小程序 `onHide` 触发后（`onShow` 之前）输出 `hello anka!`。
 
-对于这样的情况，我们可以使用 `forceEvt` 方法强制执行一次打点请求。与 `evt` 不同的是，`forceEvt` 会立刻执行请求，不论成功与否均不会重试。通常情况下，不建议使用这个 API。
+对于这样的情况，我们可以使用 `forceEvt` 方法强制执行一次打点请求。与 `evt` 不同的是，`forceEvt` 会立刻执行请求，不论成功与否均不会重试。通常情况下，不建议使用此 API。
 
 # 参考
 
-- [./src/types/BxTracker.d.ts](./src/types/BxTracker.d.ts)
+- [src/types/BxTracker.d.ts](./src/types/BxTracker.d.ts)
 
-- [./src/types/types.d.ts](./src/types/types.d.ts)
+- [src/types/types.d.ts](./src/types/types.d.ts)
 
-- [示例](./test)
+- [小程序及小游戏示例](./test)
