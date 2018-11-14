@@ -63,13 +63,15 @@ export class BxTracker extends Tracker {
                 return PageConstructor(opts)
             }
         // ############## 小游戏 ##############
-        } else if (wx && wx.getLaunchOptionsSync) {
+        } else if (typeof wx !== 'undefined' && wx.getLaunchOptionsSync) {
             tracker.onLaunchOption = wx.getLaunchOptionsSync()
 
             if (tracker.config.detectChanel) {
                 tracker.detectChanel(tracker.onLaunchOption.query[tracker.config.sourceSrcKey])
             }
             console.log('当前处于小游戏环境！')
+        } else {
+            console.log('anka-tracker无法再当前环境运行！')
         }
 
         return tracker
