@@ -779,7 +779,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.4.1";
+    var version = "0.4.3";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);
@@ -1137,14 +1137,19 @@
             this.core.queueManager.suspend(suspended);
         };
         Tracker.prototype.log = function (data) {
-            var now = Date.now();
-            data[this.config.timestampKey] = now;
+            this.injectTimestamp(data);
             this.core.log(new Task(data));
         };
         Tracker.prototype.forceLog = function (data) {
-            var now = Date.now();
-            data[this.config.timestampKey] = now;
+            this.injectTimestamp(data);
             this.core.forceLog(new Task(data));
+        };
+        Tracker.prototype.injectTimestamp = function (data) {
+            if (data[this.config.timestampKey] === void (0)) {
+                var now = Date.now();
+                data[this.config.timestampKey] = now;
+            }
+            return data;
         };
         __decorate([
             readonlyDecorator()
@@ -1158,6 +1163,9 @@
         __decorate([
             readonlyDecorator()
         ], Tracker.prototype, "forceLog", null);
+        __decorate([
+            readonlyDecorator()
+        ], Tracker.prototype, "injectTimestamp", null);
         return Tracker;
     }());
 
@@ -1213,12 +1221,15 @@
                     return PageConstructor_1(opts);
                 };
             }
-            else if (wx && wx.getLaunchOptionsSync) {
+            else if (typeof wx !== 'undefined' && wx.getLaunchOptionsSync) {
                 tracker.onLaunchOption = wx.getLaunchOptionsSync();
                 if (tracker.config.detectChanel) {
                     tracker.detectChanel(tracker.onLaunchOption.query[tracker.config.sourceSrcKey]);
                 }
                 console.log('当前处于小游戏环境！');
+            }
+            else {
+                console.log('anka-tracker无法在当前环境运行！');
             }
             return tracker;
         };
@@ -1255,6 +1266,7 @@
                     tasks.push(Promise.resolve(data));
                 }
             });
+            tasks.push(Promise.resolve(this.injectTimestamp({})));
             return Promise.all(tasks).then(function (commonDataList) { return Promise.resolve(Object.assign.apply(Object, [{}].concat(commonDataList))); });
         };
         BxTracker.prototype.track = function () {

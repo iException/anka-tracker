@@ -102,6 +102,7 @@ export class BxTracker extends Tracker {
     @readonlyDecorator()
     composeCommonData (dataList: Array<TrackData | TrackDataFactory>): Promise<TrackData> {
         const tasks: Promise<TrackData>[] = []
+
         dataList.map((data: Function) => {
             if (typeof data === 'function') {
                 tasks.push(new Promise(resolve => {
@@ -111,6 +112,8 @@ export class BxTracker extends Tracker {
                 tasks.push(Promise.resolve(data))
             }
         })
+        tasks.push(Promise.resolve(this.injectTimestamp({})))
+
         return Promise.all(tasks).then((commonDataList: TrackData[]) => Promise.resolve(Object.assign({}, ...commonDataList)))
     }
 

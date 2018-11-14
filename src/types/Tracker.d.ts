@@ -14,5 +14,6 @@ export declare class Tracker {
     init (url: string, commonData?: Object): void
     log (data: TrackData): void
     forceLog (data: TrackData): void
+    injectTimestamp (data: TrackData): void
     handleNetworkStatusChange (networdkType: string | Error): void
 }
