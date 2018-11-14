@@ -71,7 +71,7 @@ export class BxTracker extends Tracker {
             }
             console.log('当前处于小游戏环境！')
         } else {
-            console.log('anka-tracker无法再当前环境运行！')
+            console.log('anka-tracker无法在当前环境运行！')
         }
 
         return tracker
