@@ -4,23 +4,45 @@
     (factory((global.Tracker = {})));
 }(this, (function (exports) { 'use strict';
 
-    const __assign = Object.assign || function (target) {
-        for (var source, i = 1; i < arguments.length; i++) {
-            source = arguments[i];
-            for (var prop in source) {
-                if (Object.prototype.hasOwnProperty.call(source, prop)) {
-                    target[prop] = source[prop];
-                }
-            }
-        }
-        return target;
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
     };
 
     function __extends(d, b) {
-        for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+        extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -159,11 +181,9 @@
     }());
 
     var compactQueue = function compactQueue(queue) {
-        var obj;
-
-        while (queue.length) {
+        while (queue.length > 1) {
             var item = queue.pop();
-            obj = item.obj[item.prop];
+            var obj = item.obj[item.prop];
 
             if (Array.isArray(obj)) {
                 var compacted = [];
@@ -177,8 +197,6 @@
                 item.obj[item.prop] = compacted;
             }
         }
-
-        return obj;
     };
 
     var arrayToObject = function arrayToObject(source, options) {
@@ -201,7 +219,7 @@
             if (Array.isArray(target)) {
                 target.push(source);
             } else if (typeof target === 'object') {
-                if (options.plainObjects || options.allowPrototypes || !has.call(Object.prototype, source)) {
+                if ((options && (options.plainObjects || options.allowPrototypes)) || !has.call(Object.prototype, source)) {
                     target[source] = true;
                 }
             } else {
@@ -254,15 +272,21 @@
         }, target);
     };
 
-    var decode = function (str) {
+    var decode = function (str, decoder, charset) {
+        var strWithoutPlus = str.replace(/\+/g, ' ');
+        if (charset === 'iso-8859-1') {
+            // unescape never throws, no try...catch needed:
+            return strWithoutPlus.replace(/%[0-9a-f]{2}/gi, unescape);
+        }
+        // utf-8
         try {
-            return decodeURIComponent(str.replace(/\+/g, ' '));
+            return decodeURIComponent(strWithoutPlus);
         } catch (e) {
-            return str;
+            return strWithoutPlus;
         }
     };
 
-    var encode = function encode(str) {
+    var encode = function encode(str, defaultEncoder, charset) {
         // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
         // It has been adapted here for stricter adherence to RFC 3986
         if (str.length === 0) {
@@ -270,6 +294,12 @@
         }
 
         var string = typeof str === 'string' ? str : String(str);
+
+        if (charset === 'iso-8859-1') {
+            return escape(string).replace(/%u[0-9a-f]{4}/gi, function ($0) {
+                return '%26%23' + parseInt($0.slice(2), 16) + '%3B';
+            });
+        }
 
         var out = '';
         for (var i = 0; i < string.length; ++i) {
@@ -333,7 +363,9 @@
             }
         }
 
-        return compactQueue(queue);
+        compactQueue(queue);
+
+        return value;
     };
 
     var isRegExp = function isRegExp(obj) {
@@ -348,9 +380,14 @@
         return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
     };
 
+    var combine = function combine(a, b) {
+        return [].concat(a, b);
+    };
+
     var utils = {
         arrayToObject: arrayToObject,
         assign: assign,
+        combine: combine,
         compact: compact,
         decode: decode,
         encode: encode,
@@ -388,13 +425,25 @@
         }
     };
 
+    var isArray = Array.isArray;
+    var push = Array.prototype.push;
+    var pushToArray = function (arr, valueOrArray) {
+        push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray]);
+    };
+
     var toISO = Date.prototype.toISOString;
 
     var defaults = {
+        addQueryPrefix: false,
+        allowDots: false,
+        charset: 'utf-8',
+        charsetSentinel: false,
         delimiter: '&',
         encode: true,
         encoder: utils.encode,
         encodeValuesOnly: false,
+        // deprecated
+        indices: false,
         serializeDate: function serializeDate(date) { // eslint-disable-line func-name-matching
             return toISO.call(date);
         },
@@ -414,16 +463,19 @@
         allowDots,
         serializeDate,
         formatter,
-        encodeValuesOnly
+        encodeValuesOnly,
+        charset
     ) {
         var obj = object;
         if (typeof filter === 'function') {
             obj = filter(prefix, obj);
         } else if (obj instanceof Date) {
             obj = serializeDate(obj);
-        } else if (obj === null) {
+        }
+
+        if (obj === null) {
             if (strictNullHandling) {
-                return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder) : prefix;
+                return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset) : prefix;
             }
 
             obj = '';
@@ -431,8 +483,8 @@
 
         if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean' || utils.isBuffer(obj)) {
             if (encoder) {
-                var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder);
-                return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder))];
+                var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset);
+                return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset))];
             }
             return [formatter(prefix) + '=' + formatter(String(obj))];
         }
@@ -459,7 +511,7 @@
             }
 
             if (Array.isArray(obj)) {
-                values = values.concat(stringify(
+                pushToArray(values, stringify(
                     obj[key],
                     generateArrayPrefix(prefix, key),
                     generateArrayPrefix,
@@ -471,10 +523,11 @@
                     allowDots,
                     serializeDate,
                     formatter,
-                    encodeValuesOnly
+                    encodeValuesOnly,
+                    charset
                 ));
             } else {
-                values = values.concat(stringify(
+                pushToArray(values, stringify(
                     obj[key],
                     prefix + (allowDots ? '.' + key : '[' + key + ']'),
                     generateArrayPrefix,
@@ -486,7 +539,8 @@
                     allowDots,
                     serializeDate,
                     formatter,
-                    encodeValuesOnly
+                    encodeValuesOnly,
+                    charset
                 ));
             }
         }
@@ -508,9 +562,14 @@
         var encode = typeof options.encode === 'boolean' ? options.encode : defaults.encode;
         var encoder = typeof options.encoder === 'function' ? options.encoder : defaults.encoder;
         var sort = typeof options.sort === 'function' ? options.sort : null;
-        var allowDots = typeof options.allowDots === 'undefined' ? false : options.allowDots;
+        var allowDots = typeof options.allowDots === 'undefined' ? defaults.allowDots : !!options.allowDots;
         var serializeDate = typeof options.serializeDate === 'function' ? options.serializeDate : defaults.serializeDate;
         var encodeValuesOnly = typeof options.encodeValuesOnly === 'boolean' ? options.encodeValuesOnly : defaults.encodeValuesOnly;
+        var charset = options.charset || defaults.charset;
+        if (typeof options.charset !== 'undefined' && options.charset !== 'utf-8' && options.charset !== 'iso-8859-1') {
+            throw new Error('The charset option must be either utf-8, iso-8859-1, or undefined');
+        }
+
         if (typeof options.format === 'undefined') {
             options.format = formats['default'];
         } else if (!Object.prototype.hasOwnProperty.call(formats.formatters, options.format)) {
@@ -559,8 +618,7 @@
             if (skipNulls && obj[key] === null) {
                 continue;
             }
-
-            keys = keys.concat(stringify(
+            pushToArray(keys, stringify(
                 obj[key],
                 key,
                 generateArrayPrefix,
@@ -572,12 +630,23 @@
                 allowDots,
                 serializeDate,
                 formatter,
-                encodeValuesOnly
+                encodeValuesOnly,
+                charset
             ));
         }
 
         var joined = keys.join(delimiter);
         var prefix = options.addQueryPrefix === true ? '?' : '';
+
+        if (options.charsetSentinel) {
+            if (charset === 'iso-8859-1') {
+                // encodeURIComponent('&#10003;'), the "numeric entity" representation of a checkmark
+                prefix += 'utf8=%26%2310003%3B&';
+            } else {
+                // encodeURIComponent('✓')
+                prefix += 'utf8=%E2%9C%93&';
+            }
+        }
 
         return joined.length > 0 ? prefix + joined : '';
     };
@@ -588,21 +657,62 @@
         allowDots: false,
         allowPrototypes: false,
         arrayLimit: 20,
+        charset: 'utf-8',
+        charsetSentinel: false,
         decoder: utils.decode,
         delimiter: '&',
         depth: 5,
+        ignoreQueryPrefix: false,
+        interpretNumericEntities: false,
         parameterLimit: 1000,
+        parseArrays: true,
         plainObjects: false,
         strictNullHandling: false
     };
+
+    var interpretNumericEntities = function (str) {
+        return str.replace(/&#(\d+);/g, function ($0, numberStr) {
+            return String.fromCharCode(parseInt(numberStr, 10));
+        });
+    };
+
+    // This is what browsers will submit when the ✓ character occurs in an
+    // application/x-www-form-urlencoded body and the encoding of the page containing
+    // the form is iso-8859-1, or when the submitted form has an accept-charset
+    // attribute of iso-8859-1. Presumably also with other charsets that do not contain
+    // the ✓ character, such as us-ascii.
+    var isoSentinel = 'utf8=%26%2310003%3B'; // encodeURIComponent('&#10003;')
+
+    // These are the percent-encoded utf-8 octets representing a checkmark, indicating that the request actually is utf-8 encoded.
+    var charsetSentinel = 'utf8=%E2%9C%93'; // encodeURIComponent('✓')
 
     var parseValues = function parseQueryStringValues(str, options) {
         var obj = {};
         var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
         var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
         var parts = cleanStr.split(options.delimiter, limit);
+        var skipIndex = -1; // Keep track of where the utf8 sentinel was found
+        var i;
 
-        for (var i = 0; i < parts.length; ++i) {
+        var charset = options.charset;
+        if (options.charsetSentinel) {
+            for (i = 0; i < parts.length; ++i) {
+                if (parts[i].indexOf('utf8=') === 0) {
+                    if (parts[i] === charsetSentinel) {
+                        charset = 'utf-8';
+                    } else if (parts[i] === isoSentinel) {
+                        charset = 'iso-8859-1';
+                    }
+                    skipIndex = i;
+                    i = parts.length; // The eslint settings do not allow break;
+                }
+            }
+        }
+
+        for (i = 0; i < parts.length; ++i) {
+            if (i === skipIndex) {
+                continue;
+            }
             var part = parts[i];
 
             var bracketEqualsPos = part.indexOf(']=');
@@ -610,14 +720,18 @@
 
             var key, val;
             if (pos === -1) {
-                key = options.decoder(part, defaults$1.decoder);
+                key = options.decoder(part, defaults$1.decoder, charset);
                 val = options.strictNullHandling ? null : '';
             } else {
-                key = options.decoder(part.slice(0, pos), defaults$1.decoder);
-                val = options.decoder(part.slice(pos + 1), defaults$1.decoder);
+                key = options.decoder(part.slice(0, pos), defaults$1.decoder, charset);
+                val = options.decoder(part.slice(pos + 1), defaults$1.decoder, charset);
+            }
+
+            if (val && options.interpretNumericEntities && charset === 'iso-8859-1') {
+                val = interpretNumericEntities(val);
             }
             if (has$1.call(obj, key)) {
-                obj[key] = [].concat(obj[key]).concat(val);
+                obj[key] = utils.combine(obj[key], val);
             } else {
                 obj[key] = val;
             }
@@ -633,14 +747,15 @@
             var obj;
             var root = chain[i];
 
-            if (root === '[]') {
-                obj = [];
-                obj = obj.concat(leaf);
+            if (root === '[]' && options.parseArrays) {
+                obj = [].concat(leaf);
             } else {
                 obj = options.plainObjects ? Object.create(null) : {};
                 var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
                 var index = parseInt(cleanRoot, 10);
-                if (
+                if (!options.parseArrays && cleanRoot === '') {
+                    obj = { 0: leaf };
+                } else if (
                     !isNaN(index)
                     && root !== cleanRoot
                     && String(index) === cleanRoot
@@ -682,8 +797,7 @@
 
         var keys = [];
         if (parent) {
-            // If we aren't using plain objects, optionally prefix keys
-            // that would overwrite object prototype properties
+            // If we aren't using plain objects, optionally prefix keys that would overwrite object prototype properties
             if (!options.plainObjects && has$1.call(Object.prototype, parent)) {
                 if (!options.allowPrototypes) {
                     return;
@@ -728,11 +842,18 @@
         options.arrayLimit = typeof options.arrayLimit === 'number' ? options.arrayLimit : defaults$1.arrayLimit;
         options.parseArrays = options.parseArrays !== false;
         options.decoder = typeof options.decoder === 'function' ? options.decoder : defaults$1.decoder;
-        options.allowDots = typeof options.allowDots === 'boolean' ? options.allowDots : defaults$1.allowDots;
+        options.allowDots = typeof options.allowDots === 'undefined' ? defaults$1.allowDots : !!options.allowDots;
         options.plainObjects = typeof options.plainObjects === 'boolean' ? options.plainObjects : defaults$1.plainObjects;
         options.allowPrototypes = typeof options.allowPrototypes === 'boolean' ? options.allowPrototypes : defaults$1.allowPrototypes;
         options.parameterLimit = typeof options.parameterLimit === 'number' ? options.parameterLimit : defaults$1.parameterLimit;
         options.strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : defaults$1.strictNullHandling;
+
+        if (typeof options.charset !== 'undefined' && options.charset !== 'utf-8' && options.charset !== 'iso-8859-1') {
+            throw new Error('The charset option must be either utf-8, iso-8859-1, or undefined');
+        }
+        if (typeof options.charset === 'undefined') {
+            options.charset = defaults$1.charset;
+        }
 
         if (str === '' || str === null || typeof str === 'undefined') {
             return options.plainObjects ? Object.create(null) : {};
@@ -779,7 +900,7 @@
         return CommonDataVendor;
     }());
 
-    var version = "0.4.3";
+    var version = "0.4.4";
 
     var WeChatCommonDataVender = (function (_super) {
         __extends(WeChatCommonDataVender, _super);

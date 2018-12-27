@@ -15,7 +15,9 @@
         ],
         "types": [
             "node"
-        ]
+        ],
+        "noEmitHelpers": true,
+        "importHelpers": true
     },
     "include": [
         "src/**/*.ts",

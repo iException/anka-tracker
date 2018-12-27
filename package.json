@@ -24,7 +24,8 @@
   "dependencies": {
     "@types/qs": "^6.5.1",
     "await-to-js": "^2.0.1",
-    "qs": "^6.5.2"
+    "qs": "^6.5.2",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
